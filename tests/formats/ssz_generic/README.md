@@ -150,7 +150,6 @@ Data:
 ```
 
 ```python
-
 class SingleFieldTestStruct(Container):
     A: byte
 

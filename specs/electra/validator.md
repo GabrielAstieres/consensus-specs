@@ -78,7 +78,7 @@ class AggregateAndProof(Container):
 
 ```python
 class SignedAggregateAndProof(Container):
-    message: AggregateAndProof   # [Modified in Electra:EIP7549]
+    message: AggregateAndProof  # [Modified in Electra:EIP7549]
     signature: BLSSignature
 ```
 
@@ -117,7 +117,9 @@ Attestation aggregates received by the block proposer from the committee aggrega
 The proposer should run the following function to construct an on chain final aggregate from a list of network aggregates with equal `AttestationData`:
 
 ```python
-def compute_on_chain_aggregate(network_aggregates: Sequence[Attestation]) -> Attestation:
+def compute_on_chain_aggregate(
+    network_aggregates: Sequence[Attestation],
+) -> Attestation:
     aggregates = sorted(network_aggregates, key=lambda a: get_committee_indices(a.committee_bits)[0])
 
     data = aggregates[0].data
@@ -164,7 +166,8 @@ def get_eth1_vote(state: BeaconState, eth1_chain: Sequence[Eth1Block]) -> Eth1Da
     period_start = voting_period_start_time(state)
     # `eth1_chain` abstractly represents all blocks in the eth1 chain sorted by ascending block height
     votes_to_consider = [
-        get_eth1_data(block) for block in eth1_chain
+        get_eth1_data(block)
+        for block in eth1_chain
         if (
             is_candidate_block(block, period_start)
             # Ensure cannot move back to earlier deposit contract states
@@ -182,8 +185,11 @@ def get_eth1_vote(state: BeaconState, eth1_chain: Sequence[Eth1Block]) -> Eth1Da
 
     return max(
         valid_votes,
-        key=lambda v: (valid_votes.count(v), -valid_votes.index(v)),  # Tiebreak by smallest distance
-        default=default_vote
+        key=lambda v: (
+            valid_votes.count(v),
+            -valid_votes.index(v),
+        ),  # Tiebreak by smallest distance
+        default=default_vote,
     )
 ```
 
@@ -197,11 +203,13 @@ That is, `state` is the `previous_state` processed through any empty slots up to
 *Note*: The only change to `prepare_execution_payload` is the new definition of `get_expected_withdrawals`.
 
 ```python
-def prepare_execution_payload(state: BeaconState,
-                              safe_block_hash: Hash32,
-                              finalized_block_hash: Hash32,
-                              suggested_fee_recipient: ExecutionAddress,
-                              execution_engine: ExecutionEngine) -> Optional[PayloadId]:
+def prepare_execution_payload(
+    state: BeaconState,
+    safe_block_hash: Hash32,
+    finalized_block_hash: Hash32,
+    suggested_fee_recipient: ExecutionAddress,
+    execution_engine: ExecutionEngine,
+) -> Optional[PayloadId]:
     # Verify consistency of the parent hash with respect to the previous execution payload header
     parent_hash = state.latest_execution_payload_header.block_hash
 
@@ -231,7 +239,9 @@ def prepare_execution_payload(state: BeaconState,
 2. Set `block.body.execution_requests = get_execution_requests(execution_requests)`, where:
 
 ```python
-def get_execution_requests(execution_requests_list: Sequence[bytes]) -> ExecutionRequests:
+def get_execution_requests(
+    execution_requests_list: Sequence[bytes],
+) -> ExecutionRequests:
     deposits = []
     withdrawals = []
     consolidations = []
@@ -256,19 +266,16 @@ def get_execution_requests(execution_requests_list: Sequence[bytes]) -> Executio
         prev_request_type = request_type
 
         if request_type == DEPOSIT_REQUEST_TYPE:
-            deposits = ssz_deserialize(
-                List[DepositRequest, MAX_DEPOSIT_REQUESTS_PER_PAYLOAD],
-                request_data
-            )
+            deposits = ssz_deserialize(List[DepositRequest, MAX_DEPOSIT_REQUESTS_PER_PAYLOAD], request_data)
         elif request_type == WITHDRAWAL_REQUEST_TYPE:
             withdrawals = ssz_deserialize(
                 List[WithdrawalRequest, MAX_WITHDRAWAL_REQUESTS_PER_PAYLOAD],
-                request_data
+                request_data,
             )
         elif request_type == CONSOLIDATION_REQUEST_TYPE:
             consolidations = ssz_deserialize(
                 List[ConsolidationRequest, MAX_CONSOLIDATION_REQUESTS_PER_PAYLOAD],
-                request_data
+                request_data,
             )
 
     return ExecutionRequests(

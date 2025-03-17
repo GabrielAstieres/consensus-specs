@@ -77,20 +77,20 @@ from typing import Iterable
 
 
 def shuffling_case_fn(seed, count):
-    yield 'mapping', 'data', {
-        'seed': '0x' + seed.hex(),
-        'count': count,
-        'mapping': [int(spec.compute_shuffled_index(i, count, seed)) for i in range(count)]
+    yield "mapping", "data", {
+        "seed": "0x" + seed.hex(),
+        "count": count,
+        "mapping": [int(spec.compute_shuffled_index(i, count, seed)) for i in range(count)],
     }
 
 
 def shuffling_case(seed, count):
-    return f'shuffle_0x{seed.hex()}_{count}', lambda: shuffling_case_fn(seed, count)
+    return f"shuffle_0x{seed.hex()}_{count}", lambda: shuffling_case_fn(seed, count)
 
 
 @to_tuple
 def shuffling_test_cases():
-    for seed in [spec.hash(seed_init_value.to_bytes(length=4, byteorder='little')) for seed_init_value in range(30)]:
+    for seed in [spec.hash(seed_init_value.to_bytes(length=4, byteorder="little")) for seed_init_value in range(30)]:
         for count in [0, 1, 2, 3, 5, 10, 33, 100, 1000, 9999]:
             yield shuffling_case(seed, count)
 
@@ -103,14 +103,14 @@ def create_provider(config_name: str) -> gen_typing.TestProvider:
         return config_name
 
     def cases_fn() -> Iterable[gen_typing.TestCase]:
-        for (case_name, case_fn) in shuffling_test_cases():
+        for case_name, case_fn in shuffling_test_cases():
             yield gen_typing.TestCase(
-                fork_name='phase0',
-                runner_name='shuffling',
-                handler_name='core',
-                suite_name='shuffle',
+                fork_name="phase0",
+                runner_name="shuffling",
+                handler_name="core",
+                suite_name="shuffle",
                 case_name=case_name,
-                case_fn=case_fn
+                case_fn=case_fn,
             )
 
     return gen_typing.TestProvider(prepare=prepare_fn, make_cases=cases_fn)
@@ -142,13 +142,22 @@ specs = (spec_phase0, spec_altair)
 
 
 if __name__ == "__main__":
-    phase_0_mods = {key: 'eth2spec.test.phase0.sanity.test_' + key for key in [
-        'blocks',
-        'slots',
-    ]}
-    altair_mods = {**{key: 'eth2spec.test.altair.sanity.test_' + key for key in [
-        'blocks',
-    ]}, **phase_0_mods}  # also run the previous phase 0 tests
+    phase_0_mods = {
+        key: "eth2spec.test.phase0.sanity.test_" + key
+        for key in [
+            "blocks",
+            "slots",
+        ]
+    }
+    altair_mods = {
+        **{
+            key: "eth2spec.test.altair.sanity.test_" + key
+            for key in [
+                "blocks",
+            ]
+        },
+        **phase_0_mods,
+    }  # also run the previous phase 0 tests
 
     all_mods = {
         PHASE0: phase_0_mods,

@@ -114,8 +114,10 @@ def item_length(typ: SSZType) -> int:
 ```
 
 ```python
-def get_elem_type(typ: Union[BaseBytes, BaseList, Container],
-                  index_or_variable_name: Union[int, SSZVariableName]) -> SSZType:
+def get_elem_type(
+    typ: Union[BaseBytes, BaseList, Container],
+    index_or_variable_name: Union[int, SSZVariableName],
+) -> SSZType:
     """
     Return the type of the element of an object of the given type with the given index
     or member variable name (eg. `7` for `x[7]`, `"foo"` for `x.foo`)
@@ -160,7 +162,11 @@ def get_item_position(typ: SSZType, index_or_variable_name: Union[int, SSZVariab
         return start // 32, start % 32, start % 32 + item_length(typ.elem_type)
     elif issubclass(typ, Container):
         variable_name = index_or_variable_name
-        return typ.get_field_names().index(variable_name), 0, item_length(get_elem_type(typ, variable_name))
+        return (
+            typ.get_field_names().index(variable_name),
+            0,
+            item_length(get_elem_type(typ, variable_name)),
+        )
     else:
         raise Exception("Only lists/vectors/containers supported")
 ```
@@ -174,13 +180,13 @@ def get_generalized_index(typ: SSZType, *path: PyUnion[int, SSZVariableName]) ->
     root = GeneralizedIndex(1)
     for p in path:
         assert not issubclass(typ, BasicValue)  # If we descend to a basic type, the path cannot continue further
-        if p == '__len__':
+        if p == "__len__":
             assert issubclass(typ, (List, ByteList))
             typ = uint64
             root = GeneralizedIndex(root * 2 + 1)
         else:
             pos, _, _ = get_item_position(typ, p)
-            base_index = (GeneralizedIndex(2) if issubclass(typ, (List, ByteList)) else GeneralizedIndex(1))
+            base_index = GeneralizedIndex(2) if issubclass(typ, (List, ByteList)) else GeneralizedIndex(1)
             root = GeneralizedIndex(root * base_index * get_power_of_two_ceil(chunk_count(typ)) + pos)
             typ = get_elem_type(typ, p)
     return root
@@ -285,7 +291,9 @@ def get_path_indices(tree_index: GeneralizedIndex) -> Sequence[GeneralizedIndex]
 ```
 
 ```python
-def get_helper_indices(indices: Sequence[GeneralizedIndex]) -> Sequence[GeneralizedIndex]:
+def get_helper_indices(
+    indices: Sequence[GeneralizedIndex],
+) -> Sequence[GeneralizedIndex]:
     """
     Get the generalized indices of all "extra" chunks in the tree needed to prove the chunks with the given
     generalized indices. Note that the decreasing order is chosen deliberately to ensure equivalence to the
@@ -321,15 +329,17 @@ def verify_merkle_proof(leaf: Bytes32, proof: Sequence[Bytes32], index: Generali
 Now for multi-item proofs:
 
 ```python
-def calculate_multi_merkle_root(leaves: Sequence[Bytes32],
-                                proof: Sequence[Bytes32],
-                                indices: Sequence[GeneralizedIndex]) -> Root:
+def calculate_multi_merkle_root(
+    leaves: Sequence[Bytes32],
+    proof: Sequence[Bytes32],
+    indices: Sequence[GeneralizedIndex],
+) -> Root:
     assert len(leaves) == len(indices)
     helper_indices = get_helper_indices(indices)
     assert len(proof) == len(helper_indices)
     objects = {
         **{index: node for index, node in zip(indices, leaves)},
-        **{index: node for index, node in zip(helper_indices, proof)}
+        **{index: node for index, node in zip(helper_indices, proof)},
     }
     keys = sorted(objects.keys(), reverse=True)
     pos = 0
@@ -337,8 +347,7 @@ def calculate_multi_merkle_root(leaves: Sequence[Bytes32],
         k = keys[pos]
         if k in objects and k ^ 1 in objects and k // 2 not in objects:
             objects[GeneralizedIndex(k // 2)] = hash(
-                objects[GeneralizedIndex((k | 1) ^ 1)] +
-                objects[GeneralizedIndex(k | 1)]
+                objects[GeneralizedIndex((k | 1) ^ 1)] + objects[GeneralizedIndex(k | 1)]
             )
             keys.append(GeneralizedIndex(k // 2))
         pos += 1
@@ -346,10 +355,12 @@ def calculate_multi_merkle_root(leaves: Sequence[Bytes32],
 ```
 
 ```python
-def verify_merkle_multiproof(leaves: Sequence[Bytes32],
-                             proof: Sequence[Bytes32],
-                             indices: Sequence[GeneralizedIndex],
-                             root: Root) -> bool:
+def verify_merkle_multiproof(
+    leaves: Sequence[Bytes32],
+    proof: Sequence[Bytes32],
+    indices: Sequence[GeneralizedIndex],
+    root: Root,
+) -> bool:
     return calculate_multi_merkle_root(leaves, proof, indices) == root
 ```
 

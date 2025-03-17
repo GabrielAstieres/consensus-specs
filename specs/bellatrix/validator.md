@@ -48,7 +48,9 @@ class GetPayloadResponse(object):
 ### `get_pow_block_at_terminal_total_difficulty`
 
 ```python
-def get_pow_block_at_terminal_total_difficulty(pow_chain: Dict[Hash32, PowBlock]) -> Optional[PowBlock]:
+def get_pow_block_at_terminal_total_difficulty(
+    pow_chain: Dict[Hash32, PowBlock],
+) -> Optional[PowBlock]:
     # `pow_chain` abstractly represents all blocks in the PoW chain
     for block in pow_chain.values():
         block_reached_ttd = block.total_difficulty >= TERMINAL_TOTAL_DIFFICULTY
@@ -125,12 +127,14 @@ To obtain an execution payload, a block proposer building a block on top of a `s
     * `suggested_fee_recipient` is the value suggested to be used for the `fee_recipient` field of the execution payload
 
 ```python
-def prepare_execution_payload(state: BeaconState,
-                              safe_block_hash: Hash32,
-                              finalized_block_hash: Hash32,
-                              suggested_fee_recipient: ExecutionAddress,
-                              execution_engine: ExecutionEngine,
-                              pow_chain: Optional[Dict[Hash32, PowBlock]]=None) -> Optional[PayloadId]:
+def prepare_execution_payload(
+    state: BeaconState,
+    safe_block_hash: Hash32,
+    finalized_block_hash: Hash32,
+    suggested_fee_recipient: ExecutionAddress,
+    execution_engine: ExecutionEngine,
+    pow_chain: Optional[Dict[Hash32, PowBlock]] = None,
+) -> Optional[PayloadId]:
     if not is_merge_transition_complete(state):
         assert pow_chain is not None
         is_terminal_block_hash_set = TERMINAL_BLOCK_HASH != Hash32()
