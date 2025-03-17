@@ -8,13 +8,13 @@ class DenebSpecBuilder(BaseSpecBuilder):
 
     @classmethod
     def imports(cls, preset_name: str):
-        return f'''
+        return f"""
 from eth2spec.capella import {preset_name} as capella
-'''
+"""
 
     @classmethod
     def classes(cls):
-        return f'''
+        return f"""
 class BLSFieldElement(bls.Scalar):
     pass
 
@@ -26,22 +26,22 @@ class Polynomial(list):
         if len(evals) != FIELD_ELEMENTS_PER_BLOB:
             raise ValueError("expected FIELD_ELEMENTS_PER_BLOB evals")
         super().__init__(evals)
-'''
+"""
 
     @classmethod
     def preparations(cls):
-        return '''
+        return """
 T = TypeVar('T')  # For generic function
 TPoint = TypeVar('TPoint')  # For generic function. G1 or G2 point.
-'''
+"""
 
     @classmethod
     def sundry_functions(cls) -> str:
-        return '''
+        return """
 def retrieve_blobs_and_proofs(beacon_block_root: Root) -> Tuple[Sequence[Blob], Sequence[KZGProof]]:
     # pylint: disable=unused-argument
     return [], []
-'''
+"""
 
     @classmethod
     def execution_engine_cls(cls) -> str:
@@ -79,9 +79,10 @@ class NoopExecutionEngine(ExecutionEngine):
 
 EXECUTION_ENGINE = NoopExecutionEngine()"""
 
-
     @classmethod
     def hardcoded_func_dep_presets(cls, spec_object) -> Dict[str, str]:
         return {
-            'KZG_COMMITMENT_INCLUSION_PROOF_DEPTH': spec_object.preset_vars['KZG_COMMITMENT_INCLUSION_PROOF_DEPTH'].value,
+            "KZG_COMMITMENT_INCLUSION_PROOF_DEPTH": spec_object.preset_vars[
+                "KZG_COMMITMENT_INCLUSION_PROOF_DEPTH"
+            ].value,
         }

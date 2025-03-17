@@ -18,7 +18,7 @@ from eth2spec.test.custody_game.block_processing.test_process_custody_key_reveal
 
 
 def run_process_challenge_deadlines(spec, state):
-    yield from run_epoch_processing_with(spec, state, 'process_challenge_deadlines')
+    yield from run_epoch_processing_with(spec, state, "process_challenge_deadlines")
 
 
 @with_phases([CUSTODY_GAME])

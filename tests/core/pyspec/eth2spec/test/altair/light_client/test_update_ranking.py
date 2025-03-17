@@ -67,11 +67,9 @@ def test_update_ranking(spec, state):
         create_test_update(spec, lat, with_next=1, with_finality=1, participation_rate=1.0),
         create_test_update(spec, fin, with_next=1, with_finality=1, participation_rate=0.8),
         create_test_update(spec, lat, with_next=1, with_finality=1, participation_rate=0.8),
-
         # Updates without sync committee finality
         create_test_update(spec, att, with_next=1, with_finality=1, participation_rate=1.0),
         create_test_update(spec, att, with_next=1, with_finality=1, participation_rate=0.8),
-
         # Updates without indication of any finality
         create_test_update(spec, att, with_next=1, with_finality=0, participation_rate=1.0),
         create_test_update(spec, fin, with_next=1, with_finality=0, participation_rate=1.0),
@@ -79,7 +77,6 @@ def test_update_ranking(spec, state):
         create_test_update(spec, att, with_next=1, with_finality=0, participation_rate=0.8),
         create_test_update(spec, fin, with_next=1, with_finality=0, participation_rate=0.8),
         create_test_update(spec, lat, with_next=1, with_finality=0, participation_rate=0.8),
-
         # Updates with sync committee finality but no `next_sync_committee`
         create_test_update(spec, sig, with_next=0, with_finality=1, participation_rate=1.0),
         create_test_update(spec, fin, with_next=0, with_finality=1, participation_rate=1.0),
@@ -87,11 +84,9 @@ def test_update_ranking(spec, state):
         create_test_update(spec, sig, with_next=0, with_finality=1, participation_rate=0.8),
         create_test_update(spec, fin, with_next=0, with_finality=1, participation_rate=0.8),
         create_test_update(spec, lat, with_next=0, with_finality=1, participation_rate=0.8),
-
         # Updates without sync committee finality and also no `next_sync_committee`
         create_test_update(spec, att, with_next=0, with_finality=1, participation_rate=1.0),
         create_test_update(spec, att, with_next=0, with_finality=1, participation_rate=0.8),
-
         # Updates without indication of any finality nor `next_sync_committee`
         create_test_update(spec, sig, with_next=0, with_finality=0, participation_rate=1.0),
         create_test_update(spec, att, with_next=0, with_finality=0, participation_rate=1.0),
@@ -101,7 +96,6 @@ def test_update_ranking(spec, state):
         create_test_update(spec, att, with_next=0, with_finality=0, participation_rate=0.8),
         create_test_update(spec, fin, with_next=0, with_finality=0, participation_rate=0.8),
         create_test_update(spec, lat, with_next=0, with_finality=0, participation_rate=0.8),
-
         # Updates with low sync committee participation
         create_test_update(spec, fin, with_next=1, with_finality=1, participation_rate=0.4),
         create_test_update(spec, lat, with_next=1, with_finality=1, participation_rate=0.4),
@@ -117,7 +111,6 @@ def test_update_ranking(spec, state):
         create_test_update(spec, att, with_next=0, with_finality=0, participation_rate=0.4),
         create_test_update(spec, fin, with_next=0, with_finality=0, participation_rate=0.4),
         create_test_update(spec, lat, with_next=0, with_finality=0, participation_rate=0.4),
-
         # Updates with very low sync committee participation
         create_test_update(spec, fin, with_next=1, with_finality=1, participation_rate=0.2),
         create_test_update(spec, lat, with_next=1, with_finality=1, participation_rate=0.2),

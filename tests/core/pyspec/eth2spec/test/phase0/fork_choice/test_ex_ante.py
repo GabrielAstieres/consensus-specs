@@ -50,8 +50,8 @@ def test_ex_ante_vanilla(spec, state):
     test_steps = []
     # Initialization
     store, anchor_block = get_genesis_forkchoice_store_and_block(spec, state)
-    yield 'anchor_state', state
-    yield 'anchor_block', anchor_block
+    yield "anchor_state", state
+    yield "anchor_block", anchor_block
     current_time = state.slot * spec.config.SECONDS_PER_SLOT + store.genesis_time
     on_tick_and_append_step(spec, store, current_time, test_steps)
     assert store.time == current_time
@@ -95,7 +95,7 @@ def test_ex_ante_vanilla(spec, state):
     yield from add_attestation(spec, store, attestation, test_steps)
     assert spec.get_head(store) == signed_block_c.message.hash_tree_root()
 
-    yield 'steps', test_steps
+    yield "steps", test_steps
 
 
 def _get_greater_than_proposer_boost_score(spec, store, state, proposer_boost_root, root):
@@ -138,8 +138,8 @@ def test_ex_ante_attestations_is_greater_than_proposer_boost_with_boost(spec, st
     test_steps = []
     # Initialization
     store, anchor_block = get_genesis_forkchoice_store_and_block(spec, state)
-    yield 'anchor_state', state
-    yield 'anchor_block', anchor_block
+    yield "anchor_state", state
+    yield "anchor_block", anchor_block
     current_time = state.slot * spec.config.SECONDS_PER_SLOT + store.genesis_time
     on_tick_and_append_step(spec, store, current_time, test_steps)
     assert store.time == current_time
@@ -188,7 +188,7 @@ def test_ex_ante_attestations_is_greater_than_proposer_boost_with_boost(spec, st
     yield from add_attestation(spec, store, attestation, test_steps)
     assert spec.get_head(store) == signed_block_b.message.hash_tree_root()
 
-    yield 'steps', test_steps
+    yield "steps", test_steps
 
 
 @with_altair_and_later
@@ -210,8 +210,8 @@ def test_ex_ante_sandwich_without_attestations(spec, state):
     test_steps = []
     # Initialization
     store, anchor_block = get_genesis_forkchoice_store_and_block(spec, state)
-    yield 'anchor_state', state
-    yield 'anchor_block', anchor_block
+    yield "anchor_state", state
+    yield "anchor_block", anchor_block
     current_time = state.slot * spec.config.SECONDS_PER_SLOT + store.genesis_time
     on_tick_and_append_step(spec, store, current_time, test_steps)
     assert store.time == current_time
@@ -251,7 +251,7 @@ def test_ex_ante_sandwich_without_attestations(spec, state):
     yield from add_block(spec, store, signed_block_d, test_steps)
     assert spec.get_head(store) == signed_block_d.message.hash_tree_root()
 
-    yield 'steps', test_steps
+    yield "steps", test_steps
 
 
 @with_altair_and_later
@@ -276,8 +276,8 @@ def test_ex_ante_sandwich_with_honest_attestation(spec, state):
     test_steps = []
     # Initialization
     store, anchor_block = get_genesis_forkchoice_store_and_block(spec, state)
-    yield 'anchor_state', state
-    yield 'anchor_block', anchor_block
+    yield "anchor_state", state
+    yield "anchor_block", anchor_block
     current_time = state.slot * spec.config.SECONDS_PER_SLOT + store.genesis_time
     on_tick_and_append_step(spec, store, current_time, test_steps)
     assert store.time == current_time
@@ -332,7 +332,7 @@ def test_ex_ante_sandwich_with_honest_attestation(spec, state):
     yield from add_block(spec, store, signed_block_d, test_steps)
     assert spec.get_head(store) == signed_block_d.message.hash_tree_root()
 
-    yield 'steps', test_steps
+    yield "steps", test_steps
 
 
 @with_altair_and_later
@@ -357,8 +357,8 @@ def test_ex_ante_sandwich_with_boost_not_sufficient(spec, state):
     test_steps = []
     # Initialization
     store, anchor_block = get_genesis_forkchoice_store_and_block(spec, state)
-    yield 'anchor_state', state
-    yield 'anchor_block', anchor_block
+    yield "anchor_state", state
+    yield "anchor_block", anchor_block
     current_time = state.slot * spec.config.SECONDS_PER_SLOT + store.genesis_time
     on_tick_and_append_step(spec, store, current_time, test_steps)
     assert store.time == current_time
@@ -418,4 +418,4 @@ def test_ex_ante_sandwich_with_boost_not_sufficient(spec, state):
     yield from add_block(spec, store, signed_block_d, test_steps)
     assert spec.get_head(store) == signed_block_c.message.hash_tree_root()
 
-    yield 'steps', test_steps
+    yield "steps", test_steps

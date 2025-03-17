@@ -1,4 +1,4 @@
-from typing import (Any, Dict, List)
+from typing import Any, Dict, List
 
 from eth_utils import encode_hex
 from eth2spec.test.helpers.attestations import (
@@ -11,7 +11,9 @@ from eth2spec.test.helpers.fork_transition import (
 )
 from eth2spec.test.helpers.forks import (
     get_spec_for_fork_version,
-    is_post_capella, is_post_deneb, is_post_electra,
+    is_post_capella,
+    is_post_deneb,
+    is_post_electra,
 )
 from eth2spec.test.helpers.light_client import (
     get_sync_aggregate,
@@ -99,25 +101,25 @@ def _get_checks(s_spec, store):
     if is_post_capella(s_spec):
         return {
             "finalized_header": {
-                'slot': int(store.finalized_header.beacon.slot),
-                'beacon_root': encode_hex(store.finalized_header.beacon.hash_tree_root()),
-                'execution_root': encode_hex(s_spec.get_lc_execution_root(store.finalized_header)),
+                "slot": int(store.finalized_header.beacon.slot),
+                "beacon_root": encode_hex(store.finalized_header.beacon.hash_tree_root()),
+                "execution_root": encode_hex(s_spec.get_lc_execution_root(store.finalized_header)),
             },
             "optimistic_header": {
-                'slot': int(store.optimistic_header.beacon.slot),
-                'beacon_root': encode_hex(store.optimistic_header.beacon.hash_tree_root()),
-                'execution_root': encode_hex(s_spec.get_lc_execution_root(store.optimistic_header)),
+                "slot": int(store.optimistic_header.beacon.slot),
+                "beacon_root": encode_hex(store.optimistic_header.beacon.hash_tree_root()),
+                "execution_root": encode_hex(s_spec.get_lc_execution_root(store.optimistic_header)),
             },
         }
 
     return {
         "finalized_header": {
-            'slot': int(store.finalized_header.beacon.slot),
-            'beacon_root': encode_hex(store.finalized_header.beacon.hash_tree_root()),
+            "slot": int(store.finalized_header.beacon.slot),
+            "beacon_root": encode_hex(store.finalized_header.beacon.hash_tree_root()),
         },
         "optimistic_header": {
-            'slot': int(store.optimistic_header.beacon.slot),
-            'beacon_root': encode_hex(store.optimistic_header.beacon.hash_tree_root()),
+            "slot": int(store.optimistic_header.beacon.slot),
+            "beacon_root": encode_hex(store.optimistic_header.beacon.hash_tree_root()),
         },
     }
 
@@ -127,12 +129,14 @@ def emit_force_update(test, spec, state):
     test.s_spec.process_light_client_store_force_update(test.store, current_slot)
 
     yield from []  # Consistently enable `yield from` syntax in calling tests
-    test.steps.append({
-        "force_update": {
-            "current_slot": int(current_slot),
-            "checks": _get_checks(test.s_spec, test.store),
+    test.steps.append(
+        {
+            "force_update": {
+                "current_slot": int(current_slot),
+                "checks": _get_checks(test.s_spec, test.store),
+            }
         }
-    })
+    )
 
 
 def emit_update(test, spec, state, block, attested_state, attested_block, finalized_block, with_next=True, phases=None):
@@ -149,14 +153,16 @@ def emit_update(test, spec, state, block, attested_state, attested_block, finali
     test.s_spec.process_light_client_update(test.store, upgraded, current_slot, test.genesis_validators_root)
 
     yield _get_update_file_name(d_spec, data), data
-    test.steps.append({
-        "process_update": {
-            "update_fork_digest": encode_hex(data_fork_digest),
-            "update": _get_update_file_name(d_spec, data),
-            "current_slot": int(current_slot),
-            "checks": _get_checks(test.s_spec, test.store),
+    test.steps.append(
+        {
+            "process_update": {
+                "update_fork_digest": encode_hex(data_fork_digest),
+                "update": _get_update_file_name(d_spec, data),
+                "current_slot": int(current_slot),
+                "checks": _get_checks(test.s_spec, test.store),
+            }
         }
-    })
+    )
     return upgraded
 
 
@@ -167,12 +173,14 @@ def _emit_upgrade_store(test, new_s_spec, phases=None):
     store_fork_digest = test.s_spec.compute_fork_digest(store_fork_version, test.genesis_validators_root)
 
     yield from []  # Consistently enable `yield from` syntax in calling tests
-    test.steps.append({
-        "upgrade_store": {
-            "store_fork_digest": encode_hex(store_fork_digest),
-            "checks": _get_checks(test.s_spec, test.store),
+    test.steps.append(
+        {
+            "upgrade_store": {
+                "store_fork_digest": encode_hex(store_fork_digest),
+                "checks": _get_checks(test.s_spec, test.store),
+            }
         }
-    })
+    )
 
 
 def run_lc_sync_test_single_fork(spec, phases, state, fork):
@@ -194,14 +202,15 @@ def run_lc_sync_test_single_fork(spec, phases, state, fork):
     assert test.store.optimistic_header.beacon.slot == attested_state.slot
 
     # Jump to two slots before fork
-    fork_epoch = getattr(phases[fork].config, fork.upper() + '_FORK_EPOCH')
+    fork_epoch = getattr(phases[fork].config, fork.upper() + "_FORK_EPOCH")
     transition_to(spec, state, spec.compute_start_slot_at_epoch(fork_epoch) - 4)
     attested_block = state_transition_with_full_block(spec, state, True, True)
     attested_state = state.copy()
     sync_aggregate, _ = get_sync_aggregate(spec, state, phases=phases)
     block = state_transition_with_full_block(spec, state, True, True, sync_aggregate=sync_aggregate)
     update = yield from emit_update(
-        test, spec, state, block, attested_state, attested_block, finalized_block, phases=phases)
+        test, spec, state, block, attested_state, attested_block, finalized_block, phases=phases
+    )
     assert test.store.finalized_header.beacon.slot == finalized_state.slot
     assert test.store.next_sync_committee == finalized_state.next_sync_committee
     assert test.store.best_valid_update == update
@@ -285,7 +294,7 @@ def run_lc_sync_test_multi_fork(spec, phases, state, fork_1, fork_2):
     finalized_state = state.copy()
 
     # ..., attested is from `fork_1`, ...
-    fork_1_epoch = getattr(phases[fork_1].config, fork_1.upper() + '_FORK_EPOCH')
+    fork_1_epoch = getattr(phases[fork_1].config, fork_1.upper() + "_FORK_EPOCH")
     spec, state, attested_block = transition_across_forks(
         spec,
         state,
@@ -296,9 +305,8 @@ def run_lc_sync_test_multi_fork(spec, phases, state, fork_1, fork_2):
     attested_state = state.copy()
 
     # ..., and signature is from `fork_2`
-    fork_2_epoch = getattr(phases[fork_2].config, fork_2.upper() + '_FORK_EPOCH')
-    spec, state, _ = transition_across_forks(
-        spec, state, spec.compute_start_slot_at_epoch(fork_2_epoch) - 1, phases)
+    fork_2_epoch = getattr(phases[fork_2].config, fork_2.upper() + "_FORK_EPOCH")
+    spec, state, _ = transition_across_forks(spec, state, spec.compute_start_slot_at_epoch(fork_2_epoch) - 1, phases)
     sync_aggregate, _ = get_sync_aggregate(spec, state, phases=phases)
     spec, state, block = transition_across_forks(
         spec,

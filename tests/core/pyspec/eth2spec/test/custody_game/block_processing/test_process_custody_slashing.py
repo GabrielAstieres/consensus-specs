@@ -30,12 +30,12 @@ def run_custody_slashing_processing(spec, state, custody_slashing, valid=True, c
       - post-state ('post').
     If ``valid == False``, run expecting ``AssertionError``
     """
-    yield 'pre', state
-    yield 'custody_slashing', custody_slashing
+    yield "pre", state
+    yield "custody_slashing", custody_slashing
 
     if not valid:
         expect_assertion_error(lambda: spec.process_custody_slashing(state, custody_slashing))
-        yield 'post', None
+        yield "post", None
         return
 
     if correct:
@@ -56,18 +56,20 @@ def run_custody_slashing_processing(spec, state, custody_slashing, valid=True, c
     assert slashed_validator.exit_epoch < spec.FAR_FUTURE_EPOCH
     assert slashed_validator.withdrawable_epoch < spec.FAR_FUTURE_EPOCH
 
-    yield 'post', state
+    yield "post", state
 
 
-def run_standard_custody_slashing_test(spec,
-                                       state,
-                                       shard_lateness=None,
-                                       shard=None,
-                                       validator_index=None,
-                                       block_lengths=None,
-                                       slashing_message_data=None,
-                                       correct=True,
-                                       valid=True):
+def run_standard_custody_slashing_test(
+    spec,
+    state,
+    shard_lateness=None,
+    shard=None,
+    validator_index=None,
+    block_lengths=None,
+    slashing_message_data=None,
+    correct=True,
+    valid=True,
+):
     transition_to(spec, state, state.slot + 1)  # Make len(offset_slots) == 1
     if shard_lateness is None:
         shard_lateness = spec.SLOTS_PER_EPOCH
@@ -96,8 +98,7 @@ def run_standard_custody_slashing_test(spec,
         slashable=correct,
     )
 
-    attestation = get_valid_attestation(spec, state, index=shard, signed=True,
-                                        shard_transition=shard_transition)
+    attestation = get_valid_attestation(spec, state, index=shard, signed=True, shard_transition=shard_transition)
 
     transition_to(spec, state, state.slot + spec.MIN_ATTESTATION_INCLUSION_DELAY)
 
@@ -105,8 +106,9 @@ def run_standard_custody_slashing_test(spec,
 
     transition_to(spec, state, state.slot + spec.SLOTS_PER_EPOCH * (spec.EPOCHS_PER_CUSTODY_PERIOD - 1))
 
-    slashing = get_valid_custody_slashing(spec, state, attestation, shard_transition,
-                                          custody_secret, slashable_test_vector)
+    slashing = get_valid_custody_slashing(
+        spec, state, attestation, shard_transition, custody_secret, slashable_test_vector
+    )
 
     if slashing_message_data is not None:
         slashing.message.data = slashing_message_data

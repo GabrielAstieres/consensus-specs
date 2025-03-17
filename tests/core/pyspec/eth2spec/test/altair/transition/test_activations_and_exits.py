@@ -25,15 +25,14 @@ from eth2spec.test.helpers.random import (
 # Exit
 #
 
+
 @with_fork_metas([ForkMeta(pre_fork_name=pre, post_fork_name=post, fork_epoch=2) for pre, post in ALL_PRE_POST_FORKS])
-@with_presets([MINIMAL],
-              reason="only test with enough validators such that at least one exited index is not in sync committee")
-def test_transition_with_one_fourth_exiting_validators_exit_post_fork(state,
-                                                                      fork_epoch,
-                                                                      spec,
-                                                                      post_spec,
-                                                                      pre_tag,
-                                                                      post_tag):
+@with_presets(
+    [MINIMAL], reason="only test with enough validators such that at least one exited index is not in sync committee"
+)
+def test_transition_with_one_fourth_exiting_validators_exit_post_fork(
+    state, fork_epoch, spec, post_spec, pre_tag, post_tag
+):
     """
     1/4 validators initiated voluntary exit before the fork,
     and are exiting but still active *after* the fork transition.
@@ -86,12 +85,9 @@ def test_transition_with_one_fourth_exiting_validators_exit_post_fork(state,
 
 
 @with_fork_metas([ForkMeta(pre_fork_name=pre, post_fork_name=post, fork_epoch=2) for pre, post in ALL_PRE_POST_FORKS])
-def test_transition_with_one_fourth_exiting_validators_exit_at_fork(state,
-                                                                    fork_epoch,
-                                                                    spec,
-                                                                    post_spec,
-                                                                    pre_tag,
-                                                                    post_tag):
+def test_transition_with_one_fourth_exiting_validators_exit_at_fork(
+    state, fork_epoch, spec, post_spec, pre_tag, post_tag
+):
     """
     1/4 validators initiated voluntary exit before the fork,
     and being exited and inactive *right after* the fork transition.

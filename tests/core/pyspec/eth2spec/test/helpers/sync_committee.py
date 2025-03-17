@@ -47,13 +47,15 @@ def compute_aggregate_sync_committee_signature(spec, state, slot, participants, 
 def compute_sync_committee_inclusion_reward(spec, state):
     total_active_increments = spec.get_total_active_balance(state) // spec.EFFECTIVE_BALANCE_INCREMENT
     total_base_rewards = spec.get_base_reward_per_increment(state) * total_active_increments
-    max_participant_rewards = (total_base_rewards * spec.SYNC_REWARD_WEIGHT
-                               // spec.WEIGHT_DENOMINATOR // spec.SLOTS_PER_EPOCH)
+    max_participant_rewards = (
+        total_base_rewards * spec.SYNC_REWARD_WEIGHT // spec.WEIGHT_DENOMINATOR // spec.SLOTS_PER_EPOCH
+    )
     return max_participant_rewards // spec.SYNC_COMMITTEE_SIZE
 
 
 def compute_sync_committee_participant_reward_and_penalty(
-        spec, state, participant_index, committee_indices, committee_bits):
+    spec, state, participant_index, committee_indices, committee_bits
+):
     inclusion_reward = compute_sync_committee_inclusion_reward(spec, state)
 
     included_indices = [index for index, bit in zip(committee_indices, committee_bits) if bit]
@@ -62,7 +64,7 @@ def compute_sync_committee_participant_reward_and_penalty(
     not_included_multiplicities = Counter(not_included_indices)
     return (
         spec.Gwei(inclusion_reward * included_multiplicities[participant_index]),
-        spec.Gwei(inclusion_reward * not_included_multiplicities[participant_index])
+        spec.Gwei(inclusion_reward * not_included_multiplicities[participant_index]),
     )
 
 
@@ -118,15 +120,15 @@ def run_sync_committee_processing(spec, state, block, expect_exception=False, sk
     """
     pre_state = state.copy()
     # process up to the sync committee work
-    call = run_block_processing_to(spec, state, block, 'process_sync_aggregate')
-    yield 'pre', state
-    yield 'sync_aggregate', block.body.sync_aggregate
+    call = run_block_processing_to(spec, state, block, "process_sync_aggregate")
+    yield "pre", state
+    yield "sync_aggregate", block.body.sync_aggregate
     if expect_exception:
         expect_assertion_error(lambda: call(state, block))
-        yield 'post', None
+        yield "post", None
     else:
         call(state, block)
-        yield 'post', state
+        yield "post", state
     if expect_exception:
         assert pre_state.balances == state.balances
     else:
@@ -134,12 +136,7 @@ def run_sync_committee_processing(spec, state, block, expect_exception=False, sk
         committee_bits = block.body.sync_aggregate.sync_committee_bits
         if not skip_reward_validation:
             validate_sync_committee_rewards(
-                spec,
-                pre_state,
-                state,
-                committee_indices,
-                committee_bits,
-                block.proposer_index
+                spec, pre_state, state, committee_indices, committee_bits, block.proposer_index
             )
 
 
@@ -153,7 +150,7 @@ def _build_block_for_next_slot_with_sync_participation(spec, state, committee_in
             block.slot - 1,
             [index for index, bit in zip(committee_indices, committee_bits) if bit],
             block_root=block.parent_root,
-        )
+        ),
     )
     return block
 

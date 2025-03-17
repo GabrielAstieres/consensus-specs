@@ -16,10 +16,10 @@ def run_epoch_processing(spec, state, pending_deposits=None, pending_consolidati
     transition_to(spec, state, slot)
     state.pending_deposits = pending_deposits
     state.pending_consolidations = pending_consolidations
-    yield 'pre', state
-    yield 'slots', 1
+    yield "pre", state
+    yield "slots", 1
     spec.process_slots(state, state.slot + 1)
-    yield 'post', state
+    yield "post", state
 
     assert state.pending_deposits == []
     assert state.pending_consolidations == []
@@ -46,8 +46,11 @@ def test_multiple_pending_deposits_same_pubkey_compounding(spec, state):
     # Create multiple deposits with the same pubkey and compounding creds
     index = len(state.validators)
     deposit = prepare_pending_deposit(
-        spec, validator_index=index, amount=spec.MIN_ACTIVATION_BALANCE, signed=True,
-        withdrawal_credentials=(spec.COMPOUNDING_WITHDRAWAL_PREFIX + b'\x00' * 11 + b'\x11' * 20)
+        spec,
+        validator_index=index,
+        amount=spec.MIN_ACTIVATION_BALANCE,
+        signed=True,
+        withdrawal_credentials=(spec.COMPOUNDING_WITHDRAWAL_PREFIX + b"\x00" * 11 + b"\x11" * 20),
     )
     pending_deposits = [deposit, deposit]
 
@@ -64,12 +67,13 @@ def test_multiple_pending_deposits_same_pubkey_below_upward_threshold(spec, stat
     # Create multiple deposits with top up lower than the upward threshold
     index = len(state.validators)
     deposit_0 = prepare_pending_deposit(
-        spec, validator_index=index,
-        amount=(spec.MIN_ACTIVATION_BALANCE - spec.EFFECTIVE_BALANCE_INCREMENT), signed=True
+        spec,
+        validator_index=index,
+        amount=(spec.MIN_ACTIVATION_BALANCE - spec.EFFECTIVE_BALANCE_INCREMENT),
+        signed=True,
     )
     deposit_1 = prepare_pending_deposit(
-        spec, validator_index=index,
-        amount=spec.EFFECTIVE_BALANCE_INCREMENT, signed=True
+        spec, validator_index=index, amount=spec.EFFECTIVE_BALANCE_INCREMENT, signed=True
     )
     pending_deposits = [deposit_0, deposit_1]
 
@@ -86,8 +90,10 @@ def test_multiple_pending_deposits_same_pubkey_above_upward_threshold(spec, stat
     # Create multiple deposits with top up greater than the upward threshold
     index = len(state.validators)
     deposit_0 = prepare_pending_deposit(
-        spec, validator_index=index,
-        amount=(spec.MIN_ACTIVATION_BALANCE - spec.EFFECTIVE_BALANCE_INCREMENT), signed=True
+        spec,
+        validator_index=index,
+        amount=(spec.MIN_ACTIVATION_BALANCE - spec.EFFECTIVE_BALANCE_INCREMENT),
+        signed=True,
     )
     amount = spec.EFFECTIVE_BALANCE_INCREMENT // spec.HYSTERESIS_QUOTIENT * spec.HYSTERESIS_UPWARD_MULTIPLIER + 1
     deposit_1 = prepare_pending_deposit(spec, validator_index=index, amount=amount, signed=True)

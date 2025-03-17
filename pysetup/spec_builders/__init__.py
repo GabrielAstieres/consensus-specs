@@ -13,7 +13,15 @@ from .eip7732 import EIP7732SpecBuilder
 spec_builders = {
     builder.fork: builder
     for builder in (
-        Phase0SpecBuilder, AltairSpecBuilder, BellatrixSpecBuilder, CapellaSpecBuilder, DenebSpecBuilder,
-        ElectraSpecBuilder, FuluSpecBuilder, EIP6800SpecBuilder, EIP7441SpecBuilder, EIP7732SpecBuilder,
+        Phase0SpecBuilder,
+        AltairSpecBuilder,
+        BellatrixSpecBuilder,
+        CapellaSpecBuilder,
+        DenebSpecBuilder,
+        ElectraSpecBuilder,
+        FuluSpecBuilder,
+        EIP6800SpecBuilder,
+        EIP7441SpecBuilder,
+        EIP7732SpecBuilder,
     )
 }

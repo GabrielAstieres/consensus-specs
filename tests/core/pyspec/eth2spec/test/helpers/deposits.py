@@ -39,7 +39,8 @@ def sign_deposit_data(spec, deposit_data, privkey, fork_version=None):
     deposit_message = spec.DepositMessage(
         pubkey=deposit_data.pubkey,
         withdrawal_credentials=deposit_data.withdrawal_credentials,
-        amount=deposit_data.amount)
+        amount=deposit_data.amount,
+    )
     if fork_version is not None:
         domain = spec.compute_domain(domain_type=spec.DOMAIN_DEPOSIT, fork_version=fork_version)
     else:
@@ -48,13 +49,7 @@ def sign_deposit_data(spec, deposit_data, privkey, fork_version=None):
     deposit_data.signature = bls.Sign(privkey, signing_root)
 
 
-def build_deposit(spec,
-                  deposit_data_list,
-                  pubkey,
-                  privkey,
-                  amount,
-                  withdrawal_credentials,
-                  signed):
+def build_deposit(spec, deposit_data_list, pubkey, privkey, amount, withdrawal_credentials, signed):
     deposit_data = build_deposit_data(spec, pubkey, privkey, amount, withdrawal_credentials, signed=signed)
     index = len(deposit_data_list)
     deposit_data_list.append(deposit_data)
@@ -65,10 +60,9 @@ def deposit_from_context(spec, deposit_data_list, index):
     deposit_data = deposit_data_list[index]
     root = hash_tree_root(List[spec.DepositData, 2**spec.DEPOSIT_CONTRACT_TREE_DEPTH](*deposit_data_list))
     tree = calc_merkle_tree_from_leaves(tuple([d.hash_tree_root() for d in deposit_data_list]))
-    proof = (
-        list(get_merkle_proof(tree, item_index=index, tree_len=32))
-        + [len(deposit_data_list).to_bytes(32, 'little')]
-    )
+    proof = list(get_merkle_proof(tree, item_index=index, tree_len=32)) + [
+        len(deposit_data_list).to_bytes(32, "little")
+    ]
     leaf = deposit_data.hash_tree_root()
     assert spec.is_valid_merkle_branch(leaf, proof, spec.DEPOSIT_CONTRACT_TREE_DEPTH + 1, index, root)
     deposit = spec.Deposit(proof=proof, data=deposit_data)
@@ -76,12 +70,9 @@ def deposit_from_context(spec, deposit_data_list, index):
     return deposit, root, deposit_data_list
 
 
-def prepare_full_genesis_deposits(spec,
-                                  amount,
-                                  deposit_count,
-                                  min_pubkey_index=0,
-                                  signed=False,
-                                  deposit_data_list=None):
+def prepare_full_genesis_deposits(
+    spec, amount, deposit_count, min_pubkey_index=0, signed=False, deposit_data_list=None
+):
     if deposit_data_list is None:
         deposit_data_list = []
     genesis_deposits = []
@@ -104,14 +95,16 @@ def prepare_full_genesis_deposits(spec,
     return genesis_deposits, root, deposit_data_list
 
 
-def prepare_random_genesis_deposits(spec,
-                                    deposit_count,
-                                    max_pubkey_index,
-                                    min_pubkey_index=0,
-                                    max_amount=None,
-                                    min_amount=None,
-                                    deposit_data_list=None,
-                                    rng=Random(3131)):
+def prepare_random_genesis_deposits(
+    spec,
+    deposit_count,
+    max_pubkey_index,
+    min_pubkey_index=0,
+    max_amount=None,
+    min_amount=None,
+    deposit_data_list=None,
+    rng=Random(3131),
+):
     if max_amount is None:
         max_amount = spec.MAX_EFFECTIVE_BALANCE
     if min_amount is None:
@@ -139,11 +132,9 @@ def prepare_random_genesis_deposits(spec,
     return deposits, root, deposit_data_list
 
 
-def prepare_state_and_deposit(spec, state, validator_index, amount,
-                              pubkey=None,
-                              privkey=None,
-                              withdrawal_credentials=None,
-                              signed=False):
+def prepare_state_and_deposit(
+    spec, state, validator_index, amount, pubkey=None, privkey=None, withdrawal_credentials=None, signed=False
+):
     """
     Prepare the state for the deposit, and create a deposit for the given validator, depositing the given amount.
     """
@@ -175,12 +166,9 @@ def prepare_state_and_deposit(spec, state, validator_index, amount,
     return deposit
 
 
-def prepare_deposit_request(spec, validator_index, amount,
-                            index=None,
-                            pubkey=None,
-                            privkey=None,
-                            withdrawal_credentials=None,
-                            signed=False):
+def prepare_deposit_request(
+    spec, validator_index, amount, index=None, pubkey=None, privkey=None, withdrawal_credentials=None, signed=False
+):
     """
     Create a deposit request for the given validator, depositing the given amount.
     """
@@ -203,17 +191,21 @@ def prepare_deposit_request(spec, validator_index, amount,
         withdrawal_credentials=deposit_data.withdrawal_credentials,
         amount=deposit_data.amount,
         signature=deposit_data.signature,
-        index=index
+        index=index,
     )
 
 
-def prepare_pending_deposit(spec, validator_index, amount,
-                            pubkey=None,
-                            privkey=None,
-                            withdrawal_credentials=None,
-                            fork_version=None,
-                            signed=False,
-                            slot=None):
+def prepare_pending_deposit(
+    spec,
+    validator_index,
+    amount,
+    pubkey=None,
+    privkey=None,
+    withdrawal_credentials=None,
+    fork_version=None,
+    signed=False,
+    slot=None,
+):
     """
     Create a pending deposit for the given validator, depositing the given amount.
     """
@@ -231,13 +223,7 @@ def prepare_pending_deposit(spec, validator_index, amount,
     if slot is None:
         slot = spec.GENESIS_SLOT
 
-    deposit_data = build_deposit_data(spec,
-                                      pubkey,
-                                      privkey,
-                                      amount,
-                                      withdrawal_credentials,
-                                      fork_version,
-                                      signed)
+    deposit_data = build_deposit_data(spec, pubkey, privkey, amount, withdrawal_credentials, fork_version, signed)
 
     return spec.PendingDeposit(
         pubkey=deposit_data.pubkey,
@@ -246,6 +232,7 @@ def prepare_pending_deposit(spec, validator_index, amount,
         signature=deposit_data.signature,
         slot=slot,
     )
+
 
 #
 # Run processing
@@ -273,17 +260,17 @@ def run_deposit_processing(spec, state, deposit, validator_index, valid=True, ef
     if is_post_electra(spec):
         pre_pending_deposits_count = len(state.pending_deposits)
 
-    yield 'pre', state
-    yield 'deposit', deposit
+    yield "pre", state
+    yield "deposit", deposit
 
     if not valid:
         expect_assertion_error(lambda: spec.process_deposit(state, deposit))
-        yield 'post', None
+        yield "post", None
         return
 
     spec.process_deposit(state, deposit)
 
-    yield 'post', state
+    yield "post", state
 
     if not effective or not bls.KeyValidate(deposit.data.pubkey):
         assert len(state.validators) == pre_validator_count
@@ -317,8 +304,10 @@ def run_deposit_processing(spec, state, deposit, validator_index, valid=True, ef
             # new correct balance deposit queued up
             assert len(state.pending_deposits) == pre_pending_deposits_count + 1
             assert state.pending_deposits[pre_pending_deposits_count].pubkey == deposit.data.pubkey
-            assert state.pending_deposits[
-                pre_pending_deposits_count].withdrawal_credentials == deposit.data.withdrawal_credentials
+            assert (
+                state.pending_deposits[pre_pending_deposits_count].withdrawal_credentials
+                == deposit.data.withdrawal_credentials
+            )
             assert state.pending_deposits[pre_pending_deposits_count].amount == deposit.data.amount
             assert state.pending_deposits[pre_pending_deposits_count].signature == deposit.data.signature
             assert state.pending_deposits[pre_pending_deposits_count].slot == spec.GENESIS_SLOT
@@ -326,12 +315,7 @@ def run_deposit_processing(spec, state, deposit, validator_index, valid=True, ef
     assert state.eth1_deposit_index == state.eth1_data.deposit_count
 
 
-def run_deposit_processing_with_specific_fork_version(
-        spec,
-        state,
-        fork_version,
-        valid=True,
-        effective=True):
+def run_deposit_processing_with_specific_fork_version(spec, state, fork_version, valid=True, effective=True):
     validator_index = len(state.validators)
     amount = spec.MAX_EFFECTIVE_BALANCE
 
@@ -342,8 +326,10 @@ def run_deposit_processing_with_specific_fork_version(
     deposit_message = spec.DepositMessage(pubkey=pubkey, withdrawal_credentials=withdrawal_credentials, amount=amount)
     domain = spec.compute_domain(domain_type=spec.DOMAIN_DEPOSIT, fork_version=fork_version)
     deposit_data = spec.DepositData(
-        pubkey=pubkey, withdrawal_credentials=withdrawal_credentials, amount=amount,
-        signature=bls.Sign(privkey, spec.compute_signing_root(deposit_message, domain))
+        pubkey=pubkey,
+        withdrawal_credentials=withdrawal_credentials,
+        amount=amount,
+        signature=bls.Sign(privkey, spec.compute_signing_root(deposit_message, domain)),
     )
     deposit, root, _ = deposit_from_context(spec, [deposit_data], 0)
 
@@ -354,13 +340,7 @@ def run_deposit_processing_with_specific_fork_version(
     yield from run_deposit_processing(spec, state, deposit, validator_index, valid=valid, effective=effective)
 
 
-def run_deposit_request_processing(
-        spec,
-        state,
-        deposit_request,
-        validator_index,
-        effective=True):
-
+def run_deposit_request_processing(spec, state, deposit_request, validator_index, effective=True):
     """
     Run ``process_deposit_request``, yielding:
       - pre-state ('pre')
@@ -378,12 +358,12 @@ def run_deposit_request_processing(
         pre_balance = get_balance(state, validator_index)
         pre_effective_balance = state.validators[validator_index].effective_balance
 
-    yield 'pre', state
-    yield 'deposit_request', deposit_request
+    yield "pre", state
+    yield "deposit_request", deposit_request
 
     spec.process_deposit_request(state, deposit_request)
 
-    yield 'post', state
+    yield "post", state
 
     # New validator is only created after the pending_deposits processing
     assert len(state.validators) == pre_validator_count
@@ -436,11 +416,11 @@ def run_pending_deposit_applying(spec, state, pending_deposit, validator_index, 
         pre_balance = get_balance(state, validator_index)
         pre_effective_balance = state.validators[validator_index].effective_balance
 
-    yield 'pre', state
+    yield "pre", state
 
     spec.process_pending_deposits(state)
 
-    yield 'post', state
+    yield "post", state
 
     if effective:
         if is_top_up:

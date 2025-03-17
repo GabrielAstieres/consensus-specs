@@ -27,9 +27,7 @@ def run_on_attestation(spec, state, store, attestation, valid=True):
         )
     # elif spec.fork == SHARDING: TODO: check if vote count for shard blob increased as expected
 
-    assert (
-        store.latest_messages[sample_index] == latest_message
-    )
+    assert store.latest_messages[sample_index] == latest_message
 
 
 @with_all_phases

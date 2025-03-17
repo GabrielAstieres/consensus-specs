@@ -24,7 +24,7 @@ from eth2spec.test.custody_game.block_processing.test_process_chunk_challenge im
 
 
 def run_process_challenge_deadlines(spec, state):
-    yield from run_epoch_processing_with(spec, state, 'process_challenge_deadlines')
+    yield from run_epoch_processing_with(spec, state, "process_challenge_deadlines")
 
 
 @with_phases([CUSTODY_GAME])
@@ -36,18 +36,13 @@ def test_validator_slashed_after_chunk_challenge(spec, state):
     shard = 0
     offset_slots = spec.get_offset_slots(state, shard)
     shard_transition = get_sample_shard_transition(spec, state.slot, [2**15 // 3] * len(offset_slots))
-    attestation = get_valid_attestation(spec, state, index=shard, signed=True,
-                                        shard_transition=shard_transition)
+    attestation = get_valid_attestation(spec, state, index=shard, signed=True, shard_transition=shard_transition)
 
     transition_to(spec, state, state.slot + spec.MIN_ATTESTATION_INCLUSION_DELAY)
 
     _, _, _ = run_attestation_processing(spec, state, attestation)
 
-    validator_index = spec.get_beacon_committee(
-        state,
-        attestation.data.slot,
-        attestation.data.index
-    )[0]
+    validator_index = spec.get_beacon_committee(state, attestation.data.slot, attestation.data.index)[0]
 
     challenge = get_valid_chunk_challenge(spec, state, attestation, shard_transition)
 

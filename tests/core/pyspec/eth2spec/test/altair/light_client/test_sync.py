@@ -12,7 +12,10 @@ from eth2spec.test.helpers.attestations import (
     state_transition_with_full_block,
 )
 from eth2spec.test.helpers.constants import (
-    ALTAIR, CAPELLA, DENEB, ELECTRA,
+    ALTAIR,
+    CAPELLA,
+    DENEB,
+    ELECTRA,
     MINIMAL,
 )
 from eth2spec.test.helpers.light_client import (

@@ -21,7 +21,7 @@ def mock_activated_validators(spec, state, mock_activations):
         index = validator_count + i
         validator = spec.Validator(
             pubkey=pubkeys[index],
-            withdrawal_credentials=spec.ETH1_ADDRESS_WITHDRAWAL_PREFIX + b'\x00' * 11 + b'\x56' * 20,
+            withdrawal_credentials=spec.ETH1_ADDRESS_WITHDRAWAL_PREFIX + b"\x00" * 11 + b"\x56" * 20,
             activation_eligibility_epoch=0,
             activation_epoch=spec.FAR_FUTURE_EPOCH,
             exit_epoch=spec.FAR_FUTURE_EPOCH,
@@ -36,8 +36,9 @@ def mock_activated_validators(spec, state, mock_activations):
         state.validators[index].activation_epoch = spec.get_current_epoch(state)
 
 
-@with_fork_metas([ForkMeta(pre_fork_name=pre, post_fork_name=post, fork_epoch=2)
-                  for pre, post in AFTER_DENEB_PRE_POST_FORKS])
+@with_fork_metas(
+    [ForkMeta(pre_fork_name=pre, post_fork_name=post, fork_epoch=2) for pre, post in AFTER_DENEB_PRE_POST_FORKS]
+)
 @with_presets([MINIMAL], reason="churn limit update needs enough validators")
 def test_higher_churn_limit_to_lower(state, fork_epoch, spec, post_spec, pre_tag, post_tag):
     """

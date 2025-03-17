@@ -26,7 +26,7 @@ def get_execution_payload_header(spec, execution_payload):
             builder_index=spec.ValidatorIndex(0),  # TODO: Fix this
             slot=spec.Slot(0),  # TODO: Fix this
             value=spec.Gwei(0),  # TODO: Fix this
-            blob_kzg_commitments_root=spec.Root()  # TODO: Fix this
+            blob_kzg_commitments_root=spec.Root(),  # TODO: Fix this
         )
 
     payload_header = spec.ExecutionPayloadHeader(
@@ -43,7 +43,7 @@ def get_execution_payload_header(spec, execution_payload):
         extra_data=execution_payload.extra_data,
         base_fee_per_gas=execution_payload.base_fee_per_gas,
         block_hash=execution_payload.block_hash,
-        transactions_root=spec.hash_tree_root(execution_payload.transactions)
+        transactions_root=spec.hash_tree_root(execution_payload.transactions),
     )
     if is_post_capella(spec):
         payload_header.withdrawals_root = spec.hash_tree_root(execution_payload.withdrawals)
@@ -76,12 +76,14 @@ def compute_requests_hash(block_requests):
 
 # https://eips.ethereum.org/EIPS/eip-4895
 # https://eips.ethereum.org/EIPS/eip-4844
-def compute_el_header_block_hash(spec,
-                                 payload_header,
-                                 transactions_trie_root,
-                                 withdrawals_trie_root=None,
-                                 parent_beacon_block_root=None,
-                                 requests_hash=None):
+def compute_el_header_block_hash(
+    spec,
+    payload_header,
+    transactions_trie_root,
+    withdrawals_trie_root=None,
+    parent_beacon_block_root=None,
+    requests_hash=None,
+):
     """
     Computes the RLP execution block hash described by an `ExecutionPayloadHeader`.
     """
@@ -248,8 +250,7 @@ def compute_el_block_hash(spec, payload, pre_state):
     if is_post_electra(spec):
         requests_hash = compute_requests_hash([])
 
-    return compute_el_block_hash_with_new_fields(
-        spec, payload, parent_beacon_block_root, requests_hash)
+    return compute_el_block_hash_with_new_fields(spec, payload, parent_beacon_block_root, requests_hash)
 
 
 def compute_el_block_hash_for_block(spec, block):
@@ -259,8 +260,7 @@ def compute_el_block_hash_for_block(spec, block):
         requests_list = spec.get_execution_requests_list(block.body.execution_requests)
         requests_hash = compute_requests_hash(requests_list)
 
-    return compute_el_block_hash_with_new_fields(
-        spec, block.body.execution_payload, block.parent_root, requests_hash)
+    return compute_el_block_hash_with_new_fields(spec, block.body.execution_payload, block.parent_root, requests_hash)
 
 
 def build_empty_post_eip7732_execution_payload_header(spec, state):
@@ -275,7 +275,7 @@ def build_empty_post_eip7732_execution_payload_header(spec, state):
         builder_index=spec.ValidatorIndex(0),
         slot=state.slot,
         value=spec.Gwei(0),
-        blob_kzg_commitments_root=spec.Root()
+        blob_kzg_commitments_root=spec.Root(),
     )
 
 
@@ -347,10 +347,7 @@ def build_randomized_execution_payload(spec, state, rng):
     execution_payload.base_fee_per_gas = rng.randint(0, 2**256 - 1)
 
     num_transactions = rng.randint(0, 100)
-    execution_payload.transactions = [
-        get_random_tx(rng)
-        for _ in range(num_transactions)
-    ]
+    execution_payload.transactions = [get_random_tx(rng) for _ in range(num_transactions)]
 
     execution_payload.block_hash = compute_el_block_hash(spec, execution_payload, state)
 

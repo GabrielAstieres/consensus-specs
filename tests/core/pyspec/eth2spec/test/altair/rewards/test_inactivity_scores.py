@@ -6,7 +6,8 @@ from eth2spec.test.context import (
     spec_state_test,
     with_custom_state,
     single_phase,
-    low_balances, misc_balances,
+    low_balances,
+    misc_balances,
 )
 from eth2spec.test.helpers.inactivity_scores import randomize_inactivity_scores
 from eth2spec.test.helpers.rewards import leaking
@@ -74,6 +75,7 @@ def test_full_random_misc_balances(spec, state):
 #
 # Leaking variants
 #
+
 
 @with_altair_and_later
 @spec_state_test

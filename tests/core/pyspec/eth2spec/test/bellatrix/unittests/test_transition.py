@@ -3,10 +3,7 @@ from eth2spec.test.helpers.execution_payload import (
     build_state_with_incomplete_transition,
     build_state_with_complete_transition,
 )
-from eth2spec.test.context import (
-    spec_state_test,
-    with_bellatrix_and_later
-)
+from eth2spec.test.context import spec_state_test, with_bellatrix_and_later
 
 
 @with_bellatrix_and_later
@@ -28,7 +25,7 @@ expected_results = [
     (True, True, False, True),
     (True, False, False, True),
     (False, True, True, True),
-    (False, False, False, False)
+    (False, False, False, False),
 ]
 
 
@@ -36,12 +33,7 @@ expected_results = [
 @spec_state_test
 def test_is_merge_block_and_is_execution_enabled(spec, state):
     for result in expected_results:
-        (
-            with_complete_transition,
-            with_execution_payload,
-            is_merge_transition_block,
-            is_execution_enabled
-        ) = result
+        (with_complete_transition, with_execution_payload, is_merge_transition_block, is_execution_enabled) = result
         if with_complete_transition:
             state = build_state_with_complete_transition(spec, state)
         else:

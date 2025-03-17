@@ -4,12 +4,16 @@ from eth2spec.test.context import (
     with_phases,
     with_custom_state,
     with_presets,
-    spec_test, with_state,
-    low_balances, misc_balances, large_validator_set,
+    spec_test,
+    with_state,
+    low_balances,
+    misc_balances,
+    large_validator_set,
 )
 from eth2spec.test.utils import with_meta_tags
 from eth2spec.test.helpers.constants import (
-    PHASE0, ALTAIR,
+    PHASE0,
+    ALTAIR,
     MINIMAL,
 )
 from eth2spec.test.helpers.altair.fork import (
@@ -110,8 +114,9 @@ def test_altair_fork_random_misc_balances(spec, phases, state):
 
 
 @with_phases(phases=[PHASE0], other_phases=[ALTAIR])
-@with_presets([MINIMAL],
-              reason="mainnet config leads to larger validator set than limit of public/private keys pre-generated")
+@with_presets(
+    [MINIMAL], reason="mainnet config leads to larger validator set than limit of public/private keys pre-generated"
+)
 @spec_test
 @with_custom_state(balances_fn=large_validator_set, threshold_fn=lambda spec: spec.config.EJECTION_BALANCE)
 @with_meta_tags(ALTAIR_FORK_TEST_META_TAGS)

@@ -4,7 +4,9 @@ from eth2spec.test.context import (
 )
 from eth2spec.test.helpers.constants import UINT64_MAX
 from eth2spec.test.helpers.forks import (
-    is_post_altair, is_post_bellatrix, is_post_electra,
+    is_post_altair,
+    is_post_bellatrix,
+    is_post_electra,
 )
 
 
@@ -22,9 +24,7 @@ def test_validators(spec, state):
 
     # Note: can be less if you assume stricters bounds on validator set based on total ETH supply
     maximum_validators_per_committee = (
-        spec.VALIDATOR_REGISTRY_LIMIT
-        // spec.SLOTS_PER_EPOCH
-        // spec.MAX_COMMITTEES_PER_SLOT
+        spec.VALIDATOR_REGISTRY_LIMIT // spec.SLOTS_PER_EPOCH // spec.MAX_COMMITTEES_PER_SLOT
     )
     check_bound(spec.MAX_VALIDATORS_PER_COMMITTEE, 1, maximum_validators_per_committee)
     check_bound(spec.config.MIN_PER_EPOCH_CHURN_LIMIT, 1, spec.VALIDATOR_REGISTRY_LIMIT)

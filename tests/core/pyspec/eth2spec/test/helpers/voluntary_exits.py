@@ -30,10 +30,7 @@ def sign_voluntary_exit(spec, state, voluntary_exit, privkey, fork_version=None)
         domain = spec.compute_domain(spec.DOMAIN_VOLUNTARY_EXIT, fork_version, state.genesis_validators_root)
 
     signing_root = spec.compute_signing_root(voluntary_exit, domain)
-    return spec.SignedVoluntaryExit(
-        message=voluntary_exit,
-        signature=bls.Sign(privkey, signing_root)
-    )
+    return spec.SignedVoluntaryExit(message=voluntary_exit, signature=bls.Sign(privkey, signing_root))
 
 
 #
@@ -45,10 +42,7 @@ def get_exited_validators(spec, state):
 
 
 def get_unslashed_exited_validators(spec, state):
-    return [
-        index for index in get_exited_validators(spec, state)
-        if not state.validators[index].slashed
-    ]
+    return [index for index in get_exited_validators(spec, state) if not state.validators[index].slashed]
 
 
 def exit_validators(spec, state, validator_count, rng=None):
@@ -76,19 +70,19 @@ def run_voluntary_exit_processing(spec, state, signed_voluntary_exit, valid=True
     """
     validator_index = signed_voluntary_exit.message.validator_index
 
-    yield 'pre', state
-    yield 'voluntary_exit', signed_voluntary_exit
+    yield "pre", state
+    yield "voluntary_exit", signed_voluntary_exit
 
     if not valid:
         expect_assertion_error(lambda: spec.process_voluntary_exit(state, signed_voluntary_exit))
-        yield 'post', None
+        yield "post", None
         return
 
     pre_exit_epoch = state.validators[validator_index].exit_epoch
 
     spec.process_voluntary_exit(state, signed_voluntary_exit)
 
-    yield 'post', state
+    yield "post", state
 
     assert pre_exit_epoch == spec.FAR_FUTURE_EPOCH
     assert state.validators[validator_index].exit_epoch < spec.FAR_FUTURE_EPOCH

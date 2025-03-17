@@ -18,12 +18,12 @@ def run_early_derived_secret_reveal_processing(spec, state, randao_key_reveal, v
       - post-state ('post').
     If ``valid == False``, run expecting ``AssertionError``
     """
-    yield 'pre', state
-    yield 'randao_key_reveal', randao_key_reveal
+    yield "pre", state
+    yield "randao_key_reveal", randao_key_reveal
 
     if not valid:
         expect_assertion_error(lambda: spec.process_early_derived_secret_reveal(state, randao_key_reveal))
-        yield 'post', None
+        yield "post", None
         return
 
     pre_slashed_balance = get_balance(state, randao_key_reveal.revealed_index)
@@ -38,7 +38,7 @@ def run_early_derived_secret_reveal_processing(spec, state, randao_key_reveal, v
         assert slashed_validator.withdrawable_epoch < spec.FAR_FUTURE_EPOCH
 
     assert get_balance(state, randao_key_reveal.revealed_index) < pre_slashed_balance
-    yield 'post', state
+    yield "post", state
 
 
 @with_phases([CUSTODY_GAME])

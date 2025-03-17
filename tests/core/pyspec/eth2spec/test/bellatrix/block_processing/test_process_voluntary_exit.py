@@ -20,12 +20,7 @@ from eth2spec.test.helpers.voluntary_exits import (
 BELLATRIX_AND_CAPELLA = [BELLATRIX, CAPELLA]
 
 
-def run_voluntary_exit_processing_test(
-        spec,
-        state,
-        fork_version,
-        is_before_fork_epoch,
-        valid=True):
+def run_voluntary_exit_processing_test(spec, state, fork_version, is_before_fork_epoch, valid=True):
     # create a fork
     next_epoch(spec, state)
     state.fork.epoch = spec.get_current_epoch(state)

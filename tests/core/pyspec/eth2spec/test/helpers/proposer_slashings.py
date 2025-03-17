@@ -64,27 +64,27 @@ def check_proposer_slashing_effect(spec, pre_state, state, slashed_index, block=
         )
         # block proposer gained whistleblower reward
         # >= because proposer could have reported multiple
-        assert (
-            get_balance(state, proposer_index)
-            >= (
-                get_balance(pre_state, proposer_index) + whistleblower_reward
-                + sc_reward_for_proposer - sc_penalty_for_proposer
-            )
+        assert get_balance(state, proposer_index) >= (
+            get_balance(pre_state, proposer_index)
+            + whistleblower_reward
+            + sc_reward_for_proposer
+            - sc_penalty_for_proposer
         )
     else:
         # proposer reported themself so get penalty and reward
         # >= because proposer could have reported multiple
-        assert (
-            get_balance(state, slashed_index)
-            >= (
-                get_balance(pre_state, slashed_index) - slash_penalty + whistleblower_reward
-                + sc_reward_for_slashed - sc_penalty_for_slashed
-            )
+        assert get_balance(state, slashed_index) >= (
+            get_balance(pre_state, slashed_index)
+            - slash_penalty
+            + whistleblower_reward
+            + sc_reward_for_slashed
+            - sc_penalty_for_slashed
         )
 
 
-def get_valid_proposer_slashing(spec, state, random_root=b'\x99' * 32,
-                                slashed_index=None, slot=None, signed_1=False, signed_2=False):
+def get_valid_proposer_slashing(
+    spec, state, random_root=b"\x99" * 32, slashed_index=None, slot=None, signed_1=False, signed_2=False
+):
     if slashed_index is None:
         current_epoch = spec.get_current_epoch(state)
         slashed_index = spec.get_active_validator_indices(state, current_epoch)[-1]
@@ -95,9 +95,9 @@ def get_valid_proposer_slashing(spec, state, random_root=b'\x99' * 32,
     header_1 = spec.BeaconBlockHeader(
         slot=slot,
         proposer_index=slashed_index,
-        parent_root=b'\x33' * 32,
-        state_root=b'\x44' * 32,
-        body_root=b'\x55' * 32,
+        parent_root=b"\x33" * 32,
+        state_root=b"\x44" * 32,
+        body_root=b"\x55" * 32,
     )
     header_2 = header_1.copy()
     header_2.parent_root = random_root

@@ -54,8 +54,8 @@ def test_simple_attempted_reorg_without_enough_ffg_votes(spec, state):
     test_steps = []
     # Initialization
     store, anchor_block = get_genesis_forkchoice_store_and_block(spec, state)
-    yield 'anchor_state', state
-    yield 'anchor_block', anchor_block
+    yield "anchor_state", state
+    yield "anchor_block", anchor_block
     current_time = state.slot * spec.config.SECONDS_PER_SLOT + store.genesis_time
     on_tick_and_append_step(spec, store, current_time, test_steps)
     assert store.time == current_time
@@ -66,7 +66,8 @@ def test_simple_attempted_reorg_without_enough_ffg_votes(spec, state):
     # Fill epoch 1 to 3
     for _ in range(3):
         state, store, _ = yield from apply_next_epoch_with_attestations(
-            spec, state, store, True, True, test_steps=test_steps)
+            spec, state, store, True, True, test_steps=test_steps
+        )
 
     assert state.current_justified_checkpoint.epoch == store.justified_checkpoint.epoch == 3
 
@@ -151,17 +152,16 @@ def test_simple_attempted_reorg_without_enough_ffg_votes(spec, state):
     assert spec.get_head(store) == signed_block_y.message.hash_tree_root()
     assert state.current_justified_checkpoint.epoch == store.justified_checkpoint.epoch == 3
 
-    yield 'steps', test_steps
+    yield "steps", test_steps
 
 
 def _run_delayed_justification(spec, state, attempted_reorg, is_justifying_previous_epoch):
-    """
-    """
+    """ """
     test_steps = []
     # Initialization
     store, anchor_block = get_genesis_forkchoice_store_and_block(spec, state)
-    yield 'anchor_state', state
-    yield 'anchor_block', anchor_block
+    yield "anchor_state", state
+    yield "anchor_block", anchor_block
     current_time = state.slot * spec.config.SECONDS_PER_SLOT + store.genesis_time
     on_tick_and_append_step(spec, store, current_time, test_steps)
     assert store.time == current_time
@@ -172,15 +172,18 @@ def _run_delayed_justification(spec, state, attempted_reorg, is_justifying_previ
     # Fill epoch 1 to 2
     for _ in range(2):
         state, store, _ = yield from apply_next_epoch_with_attestations(
-            spec, state, store, True, True, test_steps=test_steps)
+            spec, state, store, True, True, test_steps=test_steps
+        )
 
     if is_justifying_previous_epoch:
         state, store, _ = yield from apply_next_epoch_with_attestations(
-            spec, state, store, False, False, test_steps=test_steps)
+            spec, state, store, False, False, test_steps=test_steps
+        )
         assert state.current_justified_checkpoint.epoch == store.justified_checkpoint.epoch == 2
     else:
         state, store, _ = yield from apply_next_epoch_with_attestations(
-            spec, state, store, True, True, test_steps=test_steps)
+            spec, state, store, True, True, test_steps=test_steps
+        )
         assert state.current_justified_checkpoint.epoch == store.justified_checkpoint.epoch == 3
 
     if is_justifying_previous_epoch:
@@ -247,7 +250,7 @@ def _run_delayed_justification(spec, state, attempted_reorg, is_justifying_previ
     else:
         assert state.current_justified_checkpoint.epoch == store.justified_checkpoint.epoch == 4
 
-    yield 'steps', test_steps
+    yield "steps", test_steps
 
 
 @with_altair_and_later
@@ -273,8 +276,8 @@ def _run_include_votes_of_another_empty_chain(spec, state, enough_ffg, is_justif
     test_steps = []
     # Initialization
     store, anchor_block = get_genesis_forkchoice_store_and_block(spec, state)
-    yield 'anchor_state', state
-    yield 'anchor_block', anchor_block
+    yield "anchor_state", state
+    yield "anchor_block", anchor_block
     current_time = state.slot * spec.config.SECONDS_PER_SLOT + store.genesis_time
     on_tick_and_append_step(spec, store, current_time, test_steps)
     assert store.time == current_time
@@ -285,7 +288,8 @@ def _run_include_votes_of_another_empty_chain(spec, state, enough_ffg, is_justif
     # Fill epoch 1 to 2
     for _ in range(2):
         state, store, _ = yield from apply_next_epoch_with_attestations(
-            spec, state, store, True, True, test_steps=test_steps)
+            spec, state, store, True, True, test_steps=test_steps
+        )
 
     if is_justifying_previous_epoch:
         # build chain with head in epoch 3 and justified checkpoint in epoch 2
@@ -297,7 +301,8 @@ def _run_include_votes_of_another_empty_chain(spec, state, enough_ffg, is_justif
     else:
         # build chain with head in epoch 4 and justified checkpoint in epoch 3
         state, store, _ = yield from apply_next_epoch_with_attestations(
-            spec, state, store, True, True, test_steps=test_steps)
+            spec, state, store, True, True, test_steps=test_steps
+        )
         signed_block_a = state_transition_with_full_block(spec, state, True, True)
         yield from tick_and_add_block(spec, store, signed_block_a, test_steps)
         assert spec.compute_epoch_at_slot(spec.get_current_slot(store)) == 4
@@ -362,11 +367,9 @@ def _run_include_votes_of_another_empty_chain(spec, state, enough_ffg, is_justif
 
         # apply chain z, a fork chain that includes these attestations_for_y
         block = build_empty_block(spec, state, slot=slot)
-        if (
-            len(attestations_for_y) > 0 and (
-                (not is_justifying_previous_epoch)
-                or (is_justifying_previous_epoch and attestations_for_y[0][0].data.slot == slot - 5)
-            )
+        if len(attestations_for_y) > 0 and (
+            (not is_justifying_previous_epoch)
+            or (is_justifying_previous_epoch and attestations_for_y[0][0].data.slot == slot - 5)
         ):
             block.body.attestations = attestations_for_y.pop(0)
         signed_block_z = state_transition_and_sign_block(spec, state, block)
@@ -454,7 +457,7 @@ def _run_include_votes_of_another_empty_chain(spec, state, enough_ffg, is_justif
             assert y_voting_source_epoch == store.justified_checkpoint.epoch
             assert spec.get_head(store) == signed_block_y.message.hash_tree_root()
 
-    yield 'steps', test_steps
+    yield "steps", test_steps
 
 
 @with_altair_and_later
@@ -465,7 +468,8 @@ def test_include_votes_another_empty_chain_with_enough_ffg_votes_current_epoch(s
     [Case 3]
     """
     yield from _run_include_votes_of_another_empty_chain(
-        spec, state, enough_ffg=True, is_justifying_previous_epoch=False)
+        spec, state, enough_ffg=True, is_justifying_previous_epoch=False
+    )
 
 
 @with_altair_and_later
@@ -476,7 +480,8 @@ def test_include_votes_another_empty_chain_without_enough_ffg_votes_current_epoc
     [Case 4]
     """
     yield from _run_include_votes_of_another_empty_chain(
-        spec, state, enough_ffg=False, is_justifying_previous_epoch=False)
+        spec, state, enough_ffg=False, is_justifying_previous_epoch=False
+    )
 
 
 @with_altair_and_later
@@ -551,4 +556,5 @@ def test_include_votes_another_empty_chain_with_enough_ffg_votes_previous_epoch(
 
     """
     yield from _run_include_votes_of_another_empty_chain(
-        spec, state, enough_ffg=True, is_justifying_previous_epoch=True)
+        spec, state, enough_ffg=True, is_justifying_previous_epoch=True
+    )

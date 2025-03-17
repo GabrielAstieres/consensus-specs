@@ -104,15 +104,17 @@ def dump_kzg_trusted_setup_files(secret: int, g1_length: int, g2_length: int, ou
         os.makedirs(output_dir_path)
         print("Created directory: ", output_dir_path)
 
-    file_path = output_dir_path / 'testing_trusted_setups.json'
+    file_path = output_dir_path / "testing_trusted_setups.json"
 
-    with open(file_path, 'w+') as f:
+    with open(file_path, "w+") as f:
         json.dump(
             {
                 "setup_G1": serialized_setup_g1,
                 "setup_G2": serialized_setup_g2,
                 "setup_G1_lagrange": serialized_setup_g1_lagrange,
                 "roots_of_unity": roots_of_unity,
-            }, f)
+            },
+            f,
+        )
 
-    print(f'Generated trusted setup file: {file_path}\n')
+    print(f"Generated trusted setup file: {file_path}\n")

@@ -16,13 +16,7 @@ def sign_shard_block(spec, beacon_state, shard, block, proposer_index=None):
     block.signature = bls.Sign(privkey, signing_root)
 
 
-def build_shard_block(spec,
-                      beacon_state,
-                      shard,
-                      slot=None,
-                      body=None,
-                      shard_parent_state=None,
-                      signed=False):
+def build_shard_block(spec, beacon_state, shard, slot=None, body=None, shard_parent_state=None, signed=False):
     if shard_parent_state is None:
         shard_parent_state = beacon_state.shard_states[shard]
 
@@ -85,4 +79,4 @@ def get_committee_index_of_shard(spec, state, slot, shard):  # Optional[Committe
 
 def get_sample_shard_block_body(spec, is_max=False):
     size = spec.MAX_SHARD_BLOCK_SIZE if is_max else 128
-    return b'\x56' * size
+    return b"\x56" * size

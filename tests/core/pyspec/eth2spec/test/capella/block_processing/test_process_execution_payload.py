@@ -18,7 +18,7 @@ def test_invalid_bad_parent_hash_first_payload(spec, state):
     next_slot(spec, state)
 
     execution_payload = build_empty_execution_payload(spec, state)
-    execution_payload.parent_hash = b'\x55' * 32
+    execution_payload.parent_hash = b"\x55" * 32
     execution_payload.block_hash = compute_el_block_hash(spec, execution_payload, state)
 
     yield from run_execution_payload_processing(spec, state, execution_payload, valid=False)

@@ -4,7 +4,8 @@ from eth2spec.test.helpers.constants import MINIMAL
 from eth2spec.test.context import (
     with_altair_and_later,
     with_custom_state,
-    spec_test, spec_state_test,
+    spec_test,
+    spec_state_test,
     with_presets,
     single_phase,
 )
@@ -21,7 +22,7 @@ def get_full_flags(spec):
 
 def run_process_participation_flag_updates(spec, state):
     old = state.current_epoch_participation.copy()
-    yield from run_epoch_processing_with(spec, state, 'process_participation_flag_updates')
+    yield from run_epoch_processing_with(spec, state, "process_participation_flag_updates")
     assert state.current_epoch_participation == [0] * len(state.validators)
     assert state.previous_epoch_participation == old
 
@@ -71,7 +72,7 @@ def test_current_filled(spec, state):
 def random_flags(spec, state, seed: int, previous=True, current=True):
     rng = Random(seed)
     count = len(state.validators)
-    max_flag_value_excl = 2**len(spec.PARTICIPATION_FLAG_WEIGHTS)
+    max_flag_value_excl = 2 ** len(spec.PARTICIPATION_FLAG_WEIGHTS)
     if previous:
         state.previous_epoch_participation = [rng.randrange(0, max_flag_value_excl) for _ in range(count)]
     if current:
@@ -131,6 +132,7 @@ def custom_validator_count(factor: float):
     def initializer(spec):
         num_validators = spec.SLOTS_PER_EPOCH * spec.MAX_COMMITTEES_PER_SLOT * spec.TARGET_COMMITTEE_SIZE
         return [spec.MAX_EFFECTIVE_BALANCE] * int(float(int(num_validators)) * factor)
+
     return initializer
 
 

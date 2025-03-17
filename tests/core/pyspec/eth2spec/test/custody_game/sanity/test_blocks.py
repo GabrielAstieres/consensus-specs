@@ -30,17 +30,17 @@ from eth2spec.test.helpers.state import state_transition_and_sign_block, transit
 
 
 def run_beacon_block(spec, state, block, valid=True):
-    yield 'pre', state.copy()
+    yield "pre", state.copy()
 
     if not valid:
         signed_beacon_block = state_transition_and_sign_block(spec, state, block, expect_fail=True)
-        yield 'block', signed_beacon_block
-        yield 'post', None
+        yield "block", signed_beacon_block
+        yield "post", None
         return
 
     signed_beacon_block = state_transition_and_sign_block(spec, state, block)
-    yield 'block', signed_beacon_block
-    yield 'post', state
+    yield "block", signed_beacon_block
+    yield "post", state
 
 
 #
@@ -61,8 +61,11 @@ def test_with_shard_transition_with_custody_challenge_and_response(spec, state):
     shard_block_dict: Dict[spec.Shard, Sequence[spec.SignedShardBlock]] = {shard: [shard_block]}
     shard_transitions = get_shard_transitions(spec, state, shard_block_dict)
     attestation = get_valid_attestation(
-        spec, state, index=committee_index,
-        shard_transition=shard_transitions[shard], signed=True,
+        spec,
+        state,
+        index=committee_index,
+        shard_transition=shard_transitions[shard],
+        signed=True,
     )
 
     block = build_empty_block(spec, state, slot=state.slot + 1)
@@ -75,7 +78,8 @@ def test_with_shard_transition_with_custody_challenge_and_response(spec, state):
     # CustodyChunkResponse operation
     chunk_challenge_index = state.custody_chunk_challenge_index
     custody_response = get_valid_custody_chunk_response(
-        spec, state, challenge, chunk_challenge_index, block_length_or_custody_data=body)
+        spec, state, challenge, chunk_challenge_index, block_length_or_custody_data=body
+    )
     block.body.chunk_challenge_responses = [custody_response]
 
     yield from run_beacon_block(spec, state, block)
@@ -128,8 +132,11 @@ def test_custody_slashing(spec, state):
     shard_transitions = get_shard_transitions(spec, state, shard_block_dict)
 
     attestation = get_valid_attestation(
-        spec, state, index=committee_index,
-        shard_transition=shard_transitions[shard], signed=True,
+        spec,
+        state,
+        index=committee_index,
+        shard_transition=shard_transitions[shard],
+        signed=True,
     )
     block = build_empty_block(spec, state, slot=state.slot + 1)
     block.body.attestations = [attestation]

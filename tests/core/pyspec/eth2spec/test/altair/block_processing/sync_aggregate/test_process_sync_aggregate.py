@@ -8,7 +8,8 @@ from eth2spec.test.helpers.state import (
     next_epoch_via_block,
 )
 from eth2spec.test.helpers.constants import (
-    MAINNET, MINIMAL,
+    MAINNET,
+    MINIMAL,
 )
 from eth2spec.test.helpers.sync_committee import (
     compute_aggregate_sync_committee_signature,
@@ -48,7 +49,7 @@ def test_invalid_signature_bad_domain(spec, state):
             committee_indices,  # full committee signs
             block_root=block.parent_root,
             domain_type=spec.DOMAIN_BEACON_ATTESTER,  # Incorrect domain
-        )
+        ),
     )
     yield from run_sync_committee_processing(spec, state, block, expect_exception=True)
 
@@ -71,7 +72,7 @@ def test_invalid_signature_missing_participant(spec, state):
             block.slot - 1,
             committee_indices,  # full committee signs
             block_root=block.parent_root,
-        )
+        ),
     )
     yield from run_sync_committee_processing(spec, state, block, expect_exception=True)
 
@@ -84,9 +85,10 @@ def test_invalid_signature_no_participants(spec, state):
     # No participants is an allowed case, but needs a specific signature, not the full-zeroed signature.
     block.body.sync_aggregate = spec.SyncAggregate(
         sync_committee_bits=[False] * len(block.body.sync_aggregate.sync_committee_bits),
-        sync_committee_signature=b'\x00' * 96
+        sync_committee_signature=b"\x00" * 96,
     )
     yield from run_sync_committee_processing(spec, state, block, expect_exception=True)
+
 
 # No-participants, with valid signature, is tested in test_sync_committee_rewards_empty_participants already.
 
@@ -99,7 +101,7 @@ def test_invalid_signature_infinite_signature_with_all_participants(spec, state)
     # Include all participants, try the special-case signature for no-participants
     block.body.sync_aggregate = spec.SyncAggregate(
         sync_committee_bits=[True] * len(block.body.sync_aggregate.sync_committee_bits),
-        sync_committee_signature=spec.G2_POINT_AT_INFINITY
+        sync_committee_signature=spec.G2_POINT_AT_INFINITY,
     )
     yield from run_sync_committee_processing(spec, state, block, expect_exception=True)
 
@@ -112,7 +114,7 @@ def test_invalid_signature_infinite_signature_with_single_participant(spec, stat
     # Try include a single participant with the special-case signature for no-participants.
     block.body.sync_aggregate = spec.SyncAggregate(
         sync_committee_bits=[True] + ([False] * (len(block.body.sync_aggregate.sync_committee_bits) - 1)),
-        sync_committee_signature=spec.G2_POINT_AT_INFINITY
+        sync_committee_signature=spec.G2_POINT_AT_INFINITY,
     )
     yield from run_sync_committee_processing(spec, state, block, expect_exception=True)
 
@@ -135,7 +137,7 @@ def test_invalid_signature_extra_participant(spec, state):
             block.slot - 1,
             [index for index in committee_indices if index != random_participant],
             block_root=block.parent_root,
-        )
+        ),
     )
 
     yield from run_sync_committee_processing(spec, state, block, expect_exception=True)
@@ -210,9 +212,8 @@ def test_sync_committee_rewards_duplicate_committee_full_participation(spec, sta
 
 
 def _run_sync_committee_selected_twice(
-        spec, state,
-        pre_balance, participate_first_position, participate_second_position,
-        skip_reward_validation=False):
+    spec, state, pre_balance, participate_first_position, participate_second_position, skip_reward_validation=False
+):
     committee_indices = compute_committee_indices(state)
 
     # Preconditions of this test case
@@ -237,8 +238,8 @@ def _run_sync_committee_selected_twice(
     )
 
     yield from run_successful_sync_committee_test(
-        spec, state, committee_indices, committee_bits,
-        skip_reward_validation=skip_reward_validation)
+        spec, state, committee_indices, committee_bits, skip_reward_validation=skip_reward_validation
+    )
 
     return validator_index
 
@@ -347,7 +348,7 @@ def test_invalid_signature_past_block(spec, state):
                 block.slot - 1,
                 committee_indices,
                 block_root=block.parent_root,
-            )
+            ),
         )
 
         state_transition_and_sign_block(spec, state, block)
@@ -361,7 +362,7 @@ def test_invalid_signature_past_block(spec, state):
             state,
             invalid_block.slot - 2,
             committee_indices,
-        )
+        ),
     )
 
     yield from run_sync_committee_processing(spec, state, invalid_block, expect_exception=True)
@@ -398,7 +399,7 @@ def test_invalid_signature_previous_committee(spec, state):
             block.slot - 1,
             committee_indices,
             block_root=block.parent_root,
-        )
+        ),
     )
 
     yield from run_sync_committee_processing(spec, state, block, expect_exception=True)
@@ -440,7 +441,7 @@ def test_valid_signature_future_committee(spec, state):
             block.slot - 1,
             committee_indices,
             block_root=block.parent_root,
-        )
+        ),
     )
 
     yield from run_sync_committee_processing(spec, state, block)
@@ -474,7 +475,7 @@ def test_proposer_in_committee_without_participation(spec, state):
                 block.slot - 1,
                 participants,
                 block_root=block.parent_root,
-            )
+            ),
         )
 
         if proposer_is_in_sync_committee:
@@ -511,7 +512,7 @@ def test_proposer_in_committee_with_participation(spec, state):
                 block.slot - 1,
                 committee_indices,
                 block_root=block.parent_root,
-            )
+            ),
         )
 
         if proposer_is_in_sync_committee:
@@ -523,12 +524,9 @@ def test_proposer_in_committee_with_participation(spec, state):
     raise AssertionError("failed to find a proposer in the sync committee set; check test setup")
 
 
-def _exit_validator_from_committee_and_transition_state(spec,
-                                                        state,
-                                                        committee_indices,
-                                                        rng,
-                                                        target_epoch_provider,
-                                                        withdrawable_offset=1):
+def _exit_validator_from_committee_and_transition_state(
+    spec, state, committee_indices, rng, target_epoch_provider, withdrawable_offset=1
+):
     exited_validator_index = rng.sample(committee_indices, 1)[0]
     validator = state.validators[exited_validator_index]
     current_epoch = spec.get_current_epoch(state)
@@ -581,7 +579,7 @@ def test_sync_committee_with_participating_exited_member(spec, state):
             block.slot - 1,
             committee_indices,  # full committee signs
             block_root=block.parent_root,
-        )
+        ),
     )
     yield from run_sync_committee_processing(spec, state, block)
 
@@ -624,7 +622,7 @@ def test_sync_committee_with_nonparticipating_exited_member(spec, state):
             block.slot - 1,
             committee_indices,  # with exited validator removed
             block_root=block.parent_root,
-        )
+        ),
     )
     yield from run_sync_committee_processing(spec, state, block)
 
@@ -663,7 +661,7 @@ def test_sync_committee_with_participating_withdrawable_member(spec, state):
             block.slot - 1,
             committee_indices,  # full committee signs
             block_root=block.parent_root,
-        )
+        ),
     )
     yield from run_sync_committee_processing(spec, state, block)
 
@@ -706,6 +704,6 @@ def test_sync_committee_with_nonparticipating_withdrawable_member(spec, state):
             block.slot - 1,
             committee_indices,  # with withdrawable validator removed
             block_root=block.parent_root,
-        )
+        ),
     )
     yield from run_sync_committee_processing(spec, state, block)

@@ -15,7 +15,7 @@ DIR = os.path.dirname(__file__)
 
 
 def get_deposit_contract_json():
-    file_path = os.path.join(DIR, '../../deposit_contract.json')
+    file_path = os.path.join(DIR, "../../deposit_contract.json")
     deposit_contract_json = open(file_path).read()
     return json.loads(deposit_contract_json)
 
@@ -45,17 +45,12 @@ def w3(tester):
 
 @pytest.fixture
 def registration_contract(w3, tester):
-    contract_bytecode = get_deposit_contract_json()['bytecode']
-    contract_abi = get_deposit_contract_json()['abi']
-    registration = w3.eth.contract(
-        abi=contract_abi,
-        bytecode=contract_bytecode)
+    contract_bytecode = get_deposit_contract_json()["bytecode"]
+    contract_abi = get_deposit_contract_json()["abi"]
+    registration = w3.eth.contract(abi=contract_abi, bytecode=contract_bytecode)
     tx_hash = registration.constructor().transact()
     tx_receipt = w3.eth.wait_for_transaction_receipt(tx_hash)
-    registration_deployed = w3.eth.contract(
-        address=tx_receipt.contractAddress,
-        abi=contract_abi
-    )
+    registration_deployed = w3.eth.contract(address=tx_receipt.contractAddress, abi=contract_abi)
     return registration_deployed
 
 
@@ -66,4 +61,5 @@ def assert_tx_failed(tester):
         with pytest.raises(exception):
             function_to_test()
         tester.revert_to_snapshot(snapshot_id)
+
     return assert_tx_failed

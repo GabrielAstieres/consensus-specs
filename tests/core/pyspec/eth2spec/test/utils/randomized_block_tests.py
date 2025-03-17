@@ -71,31 +71,25 @@ def randomize_state_altair(spec, state, stats, exit_fraction=0.1, slash_fraction
 
 
 def randomize_state_bellatrix(spec, state, stats, exit_fraction=0.1, slash_fraction=0.1):
-    scenario_state = randomize_state_altair(spec,
-                                            state,
-                                            stats,
-                                            exit_fraction=exit_fraction,
-                                            slash_fraction=slash_fraction)
+    scenario_state = randomize_state_altair(
+        spec, state, stats, exit_fraction=exit_fraction, slash_fraction=slash_fraction
+    )
     # TODO: randomize execution payload, merge status, etc.
     return scenario_state
 
 
 def randomize_state_capella(spec, state, stats, exit_fraction=0.1, slash_fraction=0.1):
-    scenario_state = randomize_state_bellatrix(spec,
-                                               state,
-                                               stats,
-                                               exit_fraction=exit_fraction,
-                                               slash_fraction=slash_fraction)
+    scenario_state = randomize_state_bellatrix(
+        spec, state, stats, exit_fraction=exit_fraction, slash_fraction=slash_fraction
+    )
     # TODO: randomize withdrawals
     return scenario_state
 
 
 def randomize_state_deneb(spec, state, stats, exit_fraction=0.1, slash_fraction=0.1):
-    scenario_state = randomize_state_capella(spec,
-                                             state,
-                                             stats,
-                                             exit_fraction=exit_fraction,
-                                             slash_fraction=slash_fraction)
+    scenario_state = randomize_state_capella(
+        spec, state, stats, exit_fraction=exit_fraction, slash_fraction=slash_fraction
+    )
     # TODO: randomize execution payload
     return scenario_state
 
@@ -124,6 +118,7 @@ def randomize_state_fulu(spec, state, stats, exit_fraction=0.1, slash_fraction=0
 
 # epochs
 
+
 def epochs_until_leak(spec):
     """
     State is "leaking" if the current epoch is at least
@@ -138,6 +133,7 @@ def epochs_for_shard_committee_period(spec):
 
 # slots
 
+
 def last_slot_in_epoch(spec):
     return spec.SLOTS_PER_EPOCH - 1
 
@@ -151,6 +147,7 @@ def penultimate_slot_in_epoch(spec):
 
 
 # blocks
+
 
 def no_block(_spec, _pre_state, _signed_blocks, _scenario_state):
     return None
@@ -182,7 +179,7 @@ def _warn_if_empty_operations(block):
 def _pull_deposits_from_scenario_state(spec, scenario_state, existing_block_count):
     all_deposits = scenario_state.get("deposits", [])
     start = existing_block_count * spec.MAX_DEPOSITS
-    return all_deposits[start:start + spec.MAX_DEPOSITS]
+    return all_deposits[start : start + spec.MAX_DEPOSITS]
 
 
 def random_block(spec, state, signed_blocks, scenario_state):
@@ -221,10 +218,7 @@ def random_block(spec, state, signed_blocks, scenario_state):
 SYNC_AGGREGATE_PARTICIPATION_BUCKETS = 4
 
 
-def random_block_altair_with_cycling_sync_committee_participation(spec,
-                                                                  state,
-                                                                  signed_blocks,
-                                                                  scenario_state):
+def random_block_altair_with_cycling_sync_committee_participation(spec, state, signed_blocks, scenario_state):
     block = random_block(spec, state, signed_blocks, scenario_state)
     block_index = len(signed_blocks) % SYNC_AGGREGATE_PARTICIPATION_BUCKETS
     fraction_missed = block_index * (1 / SYNC_AGGREGATE_PARTICIPATION_BUCKETS)
@@ -252,9 +246,7 @@ def random_block_bellatrix(spec, state, signed_blocks, scenario_state, rng=Rando
 def random_block_capella(spec, state, signed_blocks, scenario_state, rng=Random(3456)):
     block = random_block_bellatrix(spec, state, signed_blocks, scenario_state, rng=rng)
     block.body.bls_to_execution_changes = get_random_bls_to_execution_changes(
-        spec,
-        state,
-        num_address_changes=rng.randint(1, spec.MAX_BLS_TO_EXECUTION_CHANGES)
+        spec, state, num_address_changes=rng.randint(1, spec.MAX_BLS_TO_EXECUTION_CHANGES)
     )
     return block
 
@@ -264,7 +256,8 @@ def random_block_deneb(spec, state, signed_blocks, scenario_state, rng=Random(34
     # TODO: more commitments. blob_kzg_commitments: List[KZGCommitment, MAX_BLOBS_PER_BLOCK]
     # TODO: add MAX_BLOBS_PER_BLOCK_FULU at fulu
     opaque_tx, _, blob_kzg_commitments, _ = get_sample_blob_tx(
-        spec, blob_count=rng.randint(0, spec.config.MAX_BLOBS_PER_BLOCK), rng=rng)
+        spec, blob_count=rng.randint(0, spec.config.MAX_BLOBS_PER_BLOCK), rng=rng
+    )
     block.body.execution_payload.transactions.append(opaque_tx)
     block.body.execution_payload.block_hash = compute_el_block_hash_for_block(spec, block)
     block.body.blob_kzg_commitments = blob_kzg_commitments
@@ -288,6 +281,7 @@ def random_block_fulu(spec, state, signed_blocks, scenario_state, rng=Random(345
 
 # validations
 
+
 def no_op_validation(_spec, _state):
     return True
 
@@ -301,6 +295,7 @@ def validate_is_not_leaking(spec, state):
 
 
 # transitions
+
 
 def with_validation(transition, validation):
     if isinstance(transition, Callable):
@@ -365,6 +360,7 @@ def _randomized_scenario_setup(state_randomizer):
     how many blocks will be produced. This data can be useful to construct a valid
     pre-state and so is provided at the setup stage.
     """
+
     def _skip_epochs(epoch_producer):
         def f(spec, state, _stats):
             """
@@ -374,6 +370,7 @@ def _randomized_scenario_setup(state_randomizer):
             epochs_to_skip = epoch_producer(spec)
             slots_to_skip = epochs_to_skip * spec.SLOTS_PER_EPOCH
             state.slot += slots_to_skip
+
         return f
 
     def _simulate_honest_execution(spec, state, _stats):
@@ -391,6 +388,7 @@ def _randomized_scenario_setup(state_randomizer):
         (_simulate_honest_execution, no_op_validation),
         (state_randomizer, ensure_state_has_validators_across_lifecycle),
     )
+
 
 # Run the generated tests:
 

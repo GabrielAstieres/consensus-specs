@@ -69,9 +69,7 @@ def test_apply_pending_deposit_eth1_withdrawal_credentials(spec, state):
     # fresh deposit = next validator index = validator appended to registry
     validator_index = len(state.validators)
     withdrawal_credentials = (
-        spec.ETH1_ADDRESS_WITHDRAWAL_PREFIX
-        + b'\x00' * 11  # specified 0s
-        + b'\x59' * 20  # a 20-byte eth1 address
+        spec.ETH1_ADDRESS_WITHDRAWAL_PREFIX + b"\x00" * 11 + b"\x59" * 20  # specified 0s  # a 20-byte eth1 address
     )
     amount = spec.MIN_ACTIVATION_BALANCE
     pending_deposit = prepare_pending_deposit(
@@ -91,9 +89,7 @@ def test_apply_pending_deposit_compounding_withdrawal_credentials_under_max(spec
     # fresh deposit = next validator index = validator appended to registry
     validator_index = len(state.validators)
     withdrawal_credentials = (
-        spec.COMPOUNDING_WITHDRAWAL_PREFIX
-        + b'\x00' * 11  # specified 0s
-        + b'\x59' * 20  # a 20-byte eth1 address
+        spec.COMPOUNDING_WITHDRAWAL_PREFIX + b"\x00" * 11 + b"\x59" * 20  # specified 0s  # a 20-byte eth1 address
     )
     # effective balance will be 1 EFFECTIVE_BALANCE_INCREMENT smaller because of this small decrement
     amount = spec.MAX_EFFECTIVE_BALANCE_ELECTRA - 1
@@ -114,9 +110,7 @@ def test_apply_pending_deposit_compounding_withdrawal_credentials_max(spec, stat
     # fresh deposit = next validator index = validator appended to registry
     validator_index = len(state.validators)
     withdrawal_credentials = (
-        spec.COMPOUNDING_WITHDRAWAL_PREFIX
-        + b'\x00' * 11  # specified 0s
-        + b'\x59' * 20  # a 20-byte eth1 address
+        spec.COMPOUNDING_WITHDRAWAL_PREFIX + b"\x00" * 11 + b"\x59" * 20  # specified 0s  # a 20-byte eth1 address
     )
     # effective balance will be exactly the same as balance
     amount = spec.MAX_EFFECTIVE_BALANCE_ELECTRA
@@ -137,9 +131,7 @@ def test_apply_pending_deposit_compounding_withdrawal_credentials_over_max(spec,
     # fresh deposit = next validator index = validator appended to registry
     validator_index = len(state.validators)
     withdrawal_credentials = (
-        spec.COMPOUNDING_WITHDRAWAL_PREFIX
-        + b'\x00' * 11  # specified 0s
-        + b'\x59' * 20  # a 20-byte eth1 address
+        spec.COMPOUNDING_WITHDRAWAL_PREFIX + b"\x00" * 11 + b"\x59" * 20  # specified 0s  # a 20-byte eth1 address
     )
     # just 1 over the limit, effective balance should be set MAX_EFFECTIVE_BALANCE_ELECTRA during processing
     amount = spec.MAX_EFFECTIVE_BALANCE_ELECTRA + 1
@@ -160,9 +152,7 @@ def test_apply_pending_deposit_compounding_withdrawal_credentials_over_max_next_
     # fresh deposit = next validator index = validator appended to registry
     validator_index = len(state.validators)
     withdrawal_credentials = (
-        spec.COMPOUNDING_WITHDRAWAL_PREFIX
-        + b'\x00' * 11  # specified 0s
-        + b'\x59' * 20  # a 20-byte eth1 address
+        spec.COMPOUNDING_WITHDRAWAL_PREFIX + b"\x00" * 11 + b"\x59" * 20  # specified 0s  # a 20-byte eth1 address
     )
     # set deposit amount to the next effective balance increment over the limit
     # the validator's effective balance should be set to MAX_EFFECTIVE_BALANCE_ELECTRA
@@ -186,10 +176,7 @@ def test_apply_pending_deposit_compounding_withdrawal_credentials_over_max_next_
 def test_apply_pending_deposit_non_versioned_withdrawal_credentials(spec, state):
     # fresh deposit = next validator index = validator appended to registry
     validator_index = len(state.validators)
-    withdrawal_credentials = (
-        b'\xFF'  # Non specified withdrawal credentials version
-        + b'\x02' * 31  # Garabage bytes
-    )
+    withdrawal_credentials = b"\xff" + b"\x02" * 31  # Non specified withdrawal credentials version  # Garabage bytes
     amount = spec.MIN_ACTIVATION_BALANCE
     pending_deposit = prepare_pending_deposit(
         spec,
@@ -207,10 +194,7 @@ def test_apply_pending_deposit_non_versioned_withdrawal_credentials(spec, state)
 def test_apply_pending_deposit_non_versioned_withdrawal_credentials_over_min_activation(spec, state):
     # fresh deposit = next validator index = validator appended to registry
     validator_index = len(state.validators)
-    withdrawal_credentials = (
-        b'\xFF'  # Non specified withdrawal credentials version
-        + b'\x02' * 31  # Garabage bytes
-    )
+    withdrawal_credentials = b"\xff" + b"\x02" * 31  # Non specified withdrawal credentials version  # Garabage bytes
     # just 1 over the limit, effective balance should be set MIN_ACTIVATION_BALANCE during processing
     amount = spec.MIN_ACTIVATION_BALANCE + 1
     pending_deposit = prepare_pending_deposit(
@@ -231,7 +215,7 @@ def test_apply_pending_deposit_correct_sig_but_forked_state(spec, state):
     validator_index = len(state.validators)
     amount = spec.MIN_ACTIVATION_BALANCE
     # deposits will always be valid, regardless of the current fork
-    state.fork.current_version = spec.Version('0x1234abcd')
+    state.fork.current_version = spec.Version("0x1234abcd")
     pending_deposit = prepare_pending_deposit(spec, validator_index, amount, signed=True)
     yield from run_pending_deposit_applying(spec, state, pending_deposit, validator_index)
 
@@ -268,9 +252,7 @@ def test_apply_pending_deposit_top_up__min_activation_balance(spec, state):
 def test_apply_pending_deposit_top_up__min_activation_balance_compounding(spec, state):
     validator_index = 0
     withdrawal_credentials = (
-        spec.COMPOUNDING_WITHDRAWAL_PREFIX
-        + b'\x00' * 11  # specified 0s
-        + b'\x59' * 20  # a 20-byte eth1 address
+        spec.COMPOUNDING_WITHDRAWAL_PREFIX + b"\x00" * 11 + b"\x59" * 20  # specified 0s  # a 20-byte eth1 address
     )
     amount = spec.MIN_ACTIVATION_BALANCE // 4
     pending_deposit = prepare_pending_deposit(spec, validator_index, amount, signed=True)
@@ -290,9 +272,7 @@ def test_apply_pending_deposit_top_up__min_activation_balance_compounding(spec, 
 def test_apply_pending_deposit_top_up__max_effective_balance_compounding(spec, state):
     validator_index = 0
     withdrawal_credentials = (
-        spec.COMPOUNDING_WITHDRAWAL_PREFIX
-        + b'\x00' * 11  # specified 0s
-        + b'\x59' * 20  # a 20-byte eth1 address
+        spec.COMPOUNDING_WITHDRAWAL_PREFIX + b"\x00" * 11 + b"\x59" * 20  # specified 0s  # a 20-byte eth1 address
     )
     amount = spec.MAX_EFFECTIVE_BALANCE_ELECTRA // 4
     pending_deposit = prepare_pending_deposit(spec, validator_index, amount, signed=True)
@@ -358,7 +338,7 @@ def test_apply_pending_deposit_incorrect_sig_top_up(spec, state):
         pending_deposit.pubkey,
         pending_deposit.withdrawal_credentials,
         pending_deposit.amount,
-        pending_deposit.signature
+        pending_deposit.signature,
     )
 
     # invalid signatures, in top-ups, are allowed!
@@ -372,11 +352,7 @@ def test_apply_pending_deposit_incorrect_withdrawal_credentials_top_up(spec, sta
     amount = spec.MIN_ACTIVATION_BALANCE // 4
     withdrawal_credentials = spec.BLS_WITHDRAWAL_PREFIX + spec.hash(b"junk")[1:]
     pending_deposit = prepare_pending_deposit(
-        spec,
-        validator_index,
-        amount,
-        signed=True,
-        withdrawal_credentials=withdrawal_credentials
+        spec, validator_index, amount, signed=True, withdrawal_credentials=withdrawal_credentials
     )
 
     # inconsistent withdrawal credentials, in top-ups, are allowed!
@@ -391,7 +367,7 @@ def test_apply_pending_deposit_key_validate_invalid_subgroup(spec, state):
     amount = spec.MIN_ACTIVATION_BALANCE
 
     # All-zero pubkey would not pass `bls.KeyValidate`, but `apply_pending_deposit` would not throw exception
-    pubkey = b'\x00' * 48
+    pubkey = b"\x00" * 48
 
     pending_deposit = prepare_pending_deposit(spec, validator_index, amount, pubkey=pubkey, signed=True)
 
@@ -407,7 +383,7 @@ def test_apply_pending_deposit_key_validate_invalid_decompression(spec, state):
 
     # `deserialization_fails_infinity_with_true_b_flag` BLS G1 deserialization test case
     # This pubkey would not pass `bls.KeyValidate`, but `apply_pending_deposit` would not throw exception
-    pubkey_hex = 'c01000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000'
+    pubkey_hex = "c01000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000"
     pubkey = bytes.fromhex(pubkey_hex)
 
     pending_deposit = prepare_pending_deposit(spec, validator_index, amount, pubkey=pubkey, signed=True)
@@ -420,13 +396,13 @@ def test_apply_pending_deposit_key_validate_invalid_decompression(spec, state):
 @always_bls
 def test_apply_pending_deposit_ineffective_deposit_with_bad_fork_version(spec, state):
     validator_index = len(state.validators)
-    fork_version = spec.Version('0xAaBbCcDd')
+    fork_version = spec.Version("0xAaBbCcDd")
     pending_deposit = prepare_pending_deposit(
         spec,
         validator_index=validator_index,
         amount=spec.MIN_ACTIVATION_BALANCE,
         fork_version=fork_version,
-        signed=True
+        signed=True,
     )
 
     yield from run_pending_deposit_applying(spec, state, pending_deposit, validator_index, effective=False)
@@ -448,7 +424,7 @@ def test_apply_pending_deposit_with_previous_fork_version(spec, state):
         validator_index=validator_index,
         amount=spec.MIN_ACTIVATION_BALANCE,
         fork_version=fork_version,
-        signed=True
+        signed=True,
     )
 
     yield from run_pending_deposit_applying(spec, state, pending_deposit, validator_index, effective=False)
@@ -465,7 +441,7 @@ def test_ineffective_deposit_with_current_fork_version(spec, state):
         validator_index=validator_index,
         amount=spec.MIN_ACTIVATION_BALANCE,
         fork_version=fork_version,
-        signed=True
+        signed=True,
     )
 
     yield from run_pending_deposit_applying(spec, state, pending_deposit, validator_index, effective=False)
@@ -484,7 +460,7 @@ def test_apply_pending_deposit_effective_deposit_with_genesis_fork_version(spec,
         validator_index=validator_index,
         amount=spec.MIN_ACTIVATION_BALANCE,
         fork_version=fork_version,
-        signed=True
+        signed=True,
     )
 
     yield from run_pending_deposit_applying(spec, state, pending_deposit, validator_index)

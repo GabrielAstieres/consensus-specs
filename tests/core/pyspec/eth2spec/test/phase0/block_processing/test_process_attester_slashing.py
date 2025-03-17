@@ -1,14 +1,23 @@
 from random import Random
 
 from eth2spec.test.context import (
-    spec_state_test, expect_assertion_error, always_bls, with_all_phases,
-    with_custom_state, spec_test, single_phase,
-    low_balances, misc_balances,
+    spec_state_test,
+    expect_assertion_error,
+    always_bls,
+    with_all_phases,
+    with_custom_state,
+    spec_test,
+    single_phase,
+    low_balances,
+    misc_balances,
 )
 from eth2spec.test.helpers.attestations import sign_indexed_attestation
 from eth2spec.test.helpers.attester_slashings import (
-    get_valid_attester_slashing, get_valid_attester_slashing_by_indices,
-    get_indexed_attestation_participants, get_attestation_2_data, get_attestation_1_data,
+    get_valid_attester_slashing,
+    get_valid_attester_slashing_by_indices,
+    get_indexed_attestation_participants,
+    get_attestation_2_data,
+    get_attestation_1_data,
 )
 from eth2spec.test.helpers.proposer_slashings import (
     get_min_slashing_penalty_quotient,
@@ -29,12 +38,12 @@ def run_attester_slashing_processing(spec, state, attester_slashing, valid=True)
     If ``valid == False``, run expecting ``AssertionError``
     """
 
-    yield 'pre', state
-    yield 'attester_slashing', attester_slashing
+    yield "pre", state
+    yield "attester_slashing", attester_slashing
 
     if not valid:
         expect_assertion_error(lambda: spec.process_attester_slashing(state, attester_slashing))
-        yield 'post', None
+        yield "post", None
         return
 
     slashed_indices = get_indexed_attestation_participants(spec, attester_slashing.attestation_1)
@@ -43,12 +52,10 @@ def run_attester_slashing_processing(spec, state, attester_slashing, valid=True)
     pre_proposer_balance = get_balance(state, proposer_index)
     pre_slashing_balances = {slashed_index: get_balance(state, slashed_index) for slashed_index in slashed_indices}
     pre_slashing_effectives = {
-        slashed_index: state.validators[slashed_index].effective_balance
-        for slashed_index in slashed_indices
+        slashed_index: state.validators[slashed_index].effective_balance for slashed_index in slashed_indices
     }
     pre_withdrawalable_epochs = {
-        slashed_index: state.validators[slashed_index].withdrawable_epoch
-        for slashed_index in slashed_indices
+        slashed_index: state.validators[slashed_index].withdrawable_epoch for slashed_index in slashed_indices
     }
 
     total_proposer_rewards = sum(
@@ -68,8 +75,7 @@ def run_attester_slashing_processing(spec, state, attester_slashing, valid=True)
         assert slashed_validator.exit_epoch < spec.FAR_FUTURE_EPOCH
         if pre_withdrawalable_epoch < spec.FAR_FUTURE_EPOCH:
             expected_withdrawable_epoch = max(
-                pre_withdrawalable_epoch,
-                spec.get_current_epoch(state) + spec.EPOCHS_PER_SLASHINGS_VECTOR
+                pre_withdrawalable_epoch, spec.get_current_epoch(state) + spec.EPOCHS_PER_SLASHINGS_VECTOR
             )
             assert slashed_validator.withdrawable_epoch == expected_withdrawable_epoch
         else:
@@ -91,7 +97,7 @@ def run_attester_slashing_processing(spec, state, attester_slashing, valid=True)
 
         assert get_balance(state, proposer_index) == expected_balance
 
-    yield 'post', state
+    yield "post", state
 
 
 @with_all_phases
@@ -142,9 +148,11 @@ def test_proposer_index_slashed(spec, state):
 
     proposer_index = spec.get_beacon_proposer_index(state)
     attester_slashing = get_valid_attester_slashing_by_indices(
-        spec, state,
+        spec,
+        state,
         [proposer_index],
-        signed_1=True, signed_2=True,
+        signed_1=True,
+        signed_2=True,
     )
 
     yield from run_attester_slashing_processing(spec, state, attester_slashing)
@@ -158,9 +166,7 @@ def test_attestation_from_future(spec, state):
     next_epoch_via_block(spec, future_state)
     # Generate slashing using the future state
     attester_slashing = get_valid_attester_slashing(
-        spec, future_state,
-        slot=state.slot + 5,  # Slot is in the future wrt `state`
-        signed_1=True, signed_2=True
+        spec, future_state, slot=state.slot + 5, signed_1=True, signed_2=True  # Slot is in the future wrt `state`
     )
 
     yield from run_attester_slashing_processing(spec, state, attester_slashing)

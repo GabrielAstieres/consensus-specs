@@ -1,6 +1,7 @@
 import random
 from eth2spec.test.helpers.constants import (
-    MAINNET, MINIMAL,
+    MAINNET,
+    MINIMAL,
 )
 from eth2spec.test.helpers.random import (
     randomize_state,

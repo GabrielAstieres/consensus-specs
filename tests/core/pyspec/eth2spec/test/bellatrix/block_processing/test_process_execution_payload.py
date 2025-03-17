@@ -30,9 +30,9 @@ def run_execution_payload_processing(spec, state, execution_payload, valid=True,
     # Before Deneb, only `body.execution_payload` matters. `BeaconBlockBody` is just a wrapper.
     body = spec.BeaconBlockBody(execution_payload=execution_payload)
 
-    yield 'pre', state
-    yield 'execution', {'execution_valid': execution_valid}
-    yield 'body', body
+    yield "pre", state
+    yield "execution", {"execution_valid": execution_valid}
+    yield "body", body
 
     called_new_block = False
 
@@ -45,7 +45,7 @@ def run_execution_payload_processing(spec, state, execution_payload, valid=True,
 
     if not valid:
         expect_assertion_error(lambda: spec.process_execution_payload(state, body, TestEngine()))
-        yield 'post', None
+        yield "post", None
         return
 
     spec.process_execution_payload(state, body, TestEngine())
@@ -53,7 +53,7 @@ def run_execution_payload_processing(spec, state, execution_payload, valid=True,
     # Make sure we called the engine
     assert called_new_block
 
-    yield 'post', state
+    yield "post", state
 
     assert state.latest_execution_payload_header == get_execution_payload_header(spec, body.execution_payload)
 
@@ -132,7 +132,7 @@ def test_bad_parent_hash_first_payload(spec, state):
     next_slot(spec, state)
 
     execution_payload = build_empty_execution_payload(spec, state)
-    execution_payload.parent_hash = b'\x55' * 32
+    execution_payload.parent_hash = b"\x55" * 32
     execution_payload.block_hash = compute_el_block_hash(spec, execution_payload, state)
 
     yield from run_execution_payload_processing(spec, state, execution_payload)
@@ -155,7 +155,7 @@ def run_bad_prev_randao_test(spec, state):
     next_slot(spec, state)
 
     execution_payload = build_empty_execution_payload(spec, state)
-    execution_payload.prev_randao = b'\x42' * 32
+    execution_payload.prev_randao = b"\x42" * 32
     execution_payload.block_hash = compute_el_block_hash(spec, execution_payload, state)
 
     yield from run_execution_payload_processing(spec, state, execution_payload, valid=False)
@@ -248,7 +248,7 @@ def run_non_empty_extra_data_test(spec, state):
     next_slot(spec, state)
 
     execution_payload = build_empty_execution_payload(spec, state)
-    execution_payload.extra_data = b'\x45' * 12
+    execution_payload.extra_data = b"\x45" * 12
     execution_payload.block_hash = compute_el_block_hash(spec, execution_payload, state)
 
     yield from run_execution_payload_processing(spec, state, execution_payload)
@@ -274,10 +274,7 @@ def run_non_empty_transactions_test(spec, state):
 
     execution_payload = build_empty_execution_payload(spec, state)
     num_transactions = 2
-    execution_payload.transactions = [
-        spec.Transaction(b'\x99' * 128)
-        for _ in range(num_transactions)
-    ]
+    execution_payload.transactions = [spec.Transaction(b"\x99" * 128) for _ in range(num_transactions)]
     execution_payload.block_hash = compute_el_block_hash(spec, execution_payload, state)
 
     yield from run_execution_payload_processing(spec, state, execution_payload)
@@ -302,7 +299,7 @@ def run_zero_length_transaction_test(spec, state):
     next_slot(spec, state)
 
     execution_payload = build_empty_execution_payload(spec, state)
-    execution_payload.transactions = [spec.Transaction(b'')]
+    execution_payload.transactions = [spec.Transaction(b"")]
     assert len(execution_payload.transactions[0]) == 0
     execution_payload.block_hash = compute_el_block_hash(spec, execution_payload, state)
 
@@ -329,9 +326,7 @@ def run_randomized_non_validated_execution_fields_test(spec, state, rng, executi
     execution_payload = build_randomized_execution_payload(spec, state, rng)
 
     yield from run_execution_payload_processing(
-        spec, state,
-        execution_payload,
-        valid=execution_valid, execution_valid=execution_valid
+        spec, state, execution_payload, valid=execution_valid, execution_valid=execution_valid
     )
 
 

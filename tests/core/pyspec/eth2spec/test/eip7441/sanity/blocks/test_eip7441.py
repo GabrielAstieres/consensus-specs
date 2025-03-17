@@ -42,10 +42,10 @@ def test_eip7441__process_block_single_initial(spec, state):
     fill_candidate_trackers(spec, state, tracker_slot_1)
 
     # Produce and process a whisk block
-    yield 'pre', state
+    yield "pre", state
 
     block = build_empty_block(spec, state, 1, proposer_slot_1)
     signed_block = state_transition_and_sign_block(spec, state, block)
 
-    yield 'blocks', [signed_block]
-    yield 'post', state
+    yield "blocks", [signed_block]
+    yield "post", state

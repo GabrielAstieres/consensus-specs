@@ -44,11 +44,11 @@ def _run_blob_kzg_commitments_merkle_proof_test(spec, state, rng=None):
 
     yield "object", block.body
     kzg_commitments_inclusion_proof = column_sidcar.kzg_commitments_inclusion_proof
-    gindex = spec.get_generalized_index(spec.BeaconBlockBody, 'blob_kzg_commitments')
+    gindex = spec.get_generalized_index(spec.BeaconBlockBody, "blob_kzg_commitments")
     yield "proof", {
         "leaf": "0x" + column_sidcar.kzg_commitments.hash_tree_root().hex(),
         "leaf_index": gindex,
-        "branch": ['0x' + root.hex() for root in kzg_commitments_inclusion_proof]
+        "branch": ["0x" + root.hex() for root in kzg_commitments_inclusion_proof],
     }
     assert spec.is_valid_merkle_branch(
         leaf=column_sidcar.kzg_commitments.hash_tree_root(),

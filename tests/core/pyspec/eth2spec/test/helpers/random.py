@@ -106,13 +106,14 @@ def randomize_epoch_participation(spec, state, epoch, rng):
         for pending_attestation in pending_attestations:
             # ~1/3 have bad target
             if rng.randint(0, 2) == 0:
-                pending_attestation.data.target.root = b'\x55' * 32
+                pending_attestation.data.target.root = b"\x55" * 32
             # ~1/3 have bad head
             if rng.randint(0, 2) == 0:
-                pending_attestation.data.beacon_block_root = b'\x66' * 32
+                pending_attestation.data.beacon_block_root = b"\x66" * 32
             # ~50% participation
-            pending_attestation.aggregation_bits = [rng.choice([True, False])
-                                                    for _ in pending_attestation.aggregation_bits]
+            pending_attestation.aggregation_bits = [
+                rng.choice([True, False]) for _ in pending_attestation.aggregation_bits
+            ]
             # Random inclusion delay
             pending_attestation.inclusion_delay = rng.randint(1, spec.SLOTS_PER_EPOCH)
     else:
@@ -131,7 +132,7 @@ def randomize_epoch_participation(spec, state, epoch, rng):
                 if value:
                     flags |= flag
                 else:
-                    flags &= 0xff ^ flag
+                    flags &= 0xFF ^ flag
 
             set_flag(spec.TIMELY_HEAD_FLAG_INDEX, is_timely_correct_head)
             if is_timely_correct_head:

@@ -2,6 +2,7 @@ from abc import ABC, abstractmethod
 from typing import Sequence, Dict, Set
 from pathlib import Path
 
+
 class BaseSpecBuilder(ABC):
     @property
     @abstractmethod

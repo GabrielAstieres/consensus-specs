@@ -9,7 +9,7 @@ class EIP6800SpecBuilder(BaseSpecBuilder):
 
     @classmethod
     def imports(cls, preset_name: str):
-        return f'''
+        return f"""
 from eth2spec.deneb import {preset_name} as deneb
 from eth2spec.utils.ssz.ssz_typing import Bytes31
-'''
+"""

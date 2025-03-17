@@ -1,12 +1,6 @@
 import random
 
-from eth2spec.test.context import (
-    spec_test,
-    single_phase,
-    with_deneb_and_later,
-    expect_assertion_error,
-    always_bls
-)
+from eth2spec.test.context import spec_test, single_phase, with_deneb_and_later, expect_assertion_error, always_bls
 from eth2spec.test.helpers.blob import (
     get_sample_blob,
     get_poly_in_both_forms,
@@ -16,10 +10,12 @@ from eth2spec.utils import bls
 from eth2spec.utils.bls import BLS_MODULUS
 
 G1 = bls.G1_to_bytes48(bls.G1())
-P1_NOT_IN_G1 = bytes.fromhex("8123456789abcdef0123456789abcdef0123456789abcdef" +
-                             "0123456789abcdef0123456789abcdef0123456789abcdef")
-P1_NOT_ON_CURVE = bytes.fromhex("8123456789abcdef0123456789abcdef0123456789abcdef" +
-                                "0123456789abcdef0123456789abcdef0123456789abcde0")
+P1_NOT_IN_G1 = bytes.fromhex(
+    "8123456789abcdef0123456789abcdef0123456789abcdef" + "0123456789abcdef0123456789abcdef0123456789abcdef"
+)
+P1_NOT_ON_CURVE = bytes.fromhex(
+    "8123456789abcdef0123456789abcdef0123456789abcdef" + "0123456789abcdef0123456789abcdef0123456789abcde0"
+)
 
 
 def bls_add_one(x):
@@ -27,9 +23,7 @@ def bls_add_one(x):
     Adds "one" (actually bls.G1()) to a compressed group element.
     Useful to compute definitely incorrect proofs.
     """
-    return bls.G1_to_bytes48(
-        bls.add(bls.bytes48_to_G1(x), bls.G1())
-    )
+    return bls.G1_to_bytes48(bls.add(bls.bytes48_to_G1(x), bls.G1()))
 
 
 @with_deneb_and_later
@@ -292,9 +286,9 @@ def test_bytes_to_bls_field_modulus(spec):
     Verify that `bytes_to_bls_field` fails on BLS modulus
     """
 
-    expect_assertion_error(lambda: spec.bytes_to_bls_field(
-        BLS_MODULUS.to_bytes(spec.BYTES_PER_FIELD_ELEMENT, spec.KZG_ENDIANNESS)
-    ))
+    expect_assertion_error(
+        lambda: spec.bytes_to_bls_field(BLS_MODULUS.to_bytes(spec.BYTES_PER_FIELD_ELEMENT, spec.KZG_ENDIANNESS))
+    )
 
 
 @with_deneb_and_later
@@ -305,4 +299,4 @@ def test_bytes_to_bls_field_max(spec):
     Verify that `bytes_to_bls_field` fails on 2**256 - 1
     """
 
-    expect_assertion_error(lambda: spec.bytes_to_bls_field(b"\xFF" * 32))
+    expect_assertion_error(lambda: spec.bytes_to_bls_field(b"\xff" * 32))

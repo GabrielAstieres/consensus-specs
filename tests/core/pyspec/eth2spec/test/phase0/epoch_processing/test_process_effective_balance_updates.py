@@ -16,7 +16,7 @@ def run_test_effective_balance_hysteresis(spec, state, with_compounding_credenti
     assert is_post_electra(spec) or not with_compounding_credentials
     # Prepare state up to the final-updates.
     # Then overwrite the balances, we only want to focus to be on the hysteresis based changes.
-    run_epoch_processing_to(spec, state, 'process_effective_balance_updates')
+    run_epoch_processing_to(spec, state, "process_effective_balance_updates")
     # Set some edge cases for balances
     max = spec.MAX_EFFECTIVE_BALANCE_ELECTRA if with_compounding_credentials else spec.MAX_EFFECTIVE_BALANCE
     min = spec.config.EJECTION_BALANCE
@@ -51,8 +51,12 @@ def run_test_effective_balance_hysteresis(spec, state, with_compounding_credenti
             (min, min + (hys_inc * div * 2), min + (2 * inc), "exact two step balance increment"),
             (min, min + (hys_inc * div * 2) + 1, min + (2 * inc), "over two steps, round down"),
             (min, min * 2 + 1, min * 2, "top up or consolidation doubling the balance"),
-            (min, min * 2 - 1, min * 2 - spec.EFFECTIVE_BALANCE_INCREMENT,
-                "top up or consolidation almost doubling the balance"),
+            (
+                min,
+                min * 2 - 1,
+                min * 2 - spec.EFFECTIVE_BALANCE_INCREMENT,
+                "top up or consolidation almost doubling the balance",
+            ),
         ]
 
     current_epoch = spec.get_current_epoch(state)
@@ -63,9 +67,9 @@ def run_test_effective_balance_hysteresis(spec, state, with_compounding_credenti
         state.validators[i].effective_balance = pre_eff
         state.balances[i] = bal
 
-    yield 'pre', state
+    yield "pre", state
     spec.process_effective_balance_updates(state)
-    yield 'post', state
+    yield "post", state
 
     for i, (_, _, post_eff, name) in enumerate(cases):
         assert state.validators[i].effective_balance == post_eff, name

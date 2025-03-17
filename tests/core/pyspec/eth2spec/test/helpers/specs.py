@@ -2,8 +2,10 @@ from typing import (
     Dict,
 )
 from .constants import (
-    MINIMAL, MAINNET,
-    ALL_PHASES, EIP7441,
+    MINIMAL,
+    MAINNET,
+    ALL_PHASES,
+    EIP7441,
 )
 from .typing import (
     PresetBaseName,

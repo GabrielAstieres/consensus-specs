@@ -9,7 +9,7 @@ def h(a: bytes, b: bytes) -> bytes:
 
 def e(v: int) -> bytes:
     # prefix with 0xfff... to make it non-zero
-    return b'\xff' * 28 + v.to_bytes(length=4, byteorder='little')
+    return b"\xff" * 28 + v.to_bytes(length=4, byteorder="little")
 
 
 def z(i: int) -> bytes:
@@ -61,7 +61,7 @@ cases = [
 
 
 @pytest.mark.parametrize(
-    'count,limit,value',
+    "count,limit,value",
     cases,
 )
 def test_merkleize_chunks_and_get_merkle_root(count, limit, value):

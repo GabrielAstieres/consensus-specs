@@ -10,23 +10,30 @@ from eth2spec.test.helpers.forks import (
 
 class Eip4844RlpTransaction(Serializable):
     fields = (
-        ('chain_id', big_endian_int),
-        ('nonce', big_endian_int),
-        ('max_priority_fee_per_gas', big_endian_int),
-        ('max_fee_per_gas', big_endian_int),
-        ('gas_limit', big_endian_int),
-        ('to', Binary(20, 20)),
-        ('value', big_endian_int),
-        ('data', binary),
-        ('access_list', CountableList(RLPList([
-            Binary(20, 20),
-            CountableList(Binary(32, 32)),
-        ]))),
-        ('max_fee_per_blob_gas', big_endian_int),
-        ('blob_versioned_hashes', CountableList(Binary(32, 32))),
-        ('signature_y_parity', big_endian_int),
-        ('signature_r', big_endian_int),
-        ('signature_s', big_endian_int),
+        ("chain_id", big_endian_int),
+        ("nonce", big_endian_int),
+        ("max_priority_fee_per_gas", big_endian_int),
+        ("max_fee_per_gas", big_endian_int),
+        ("gas_limit", big_endian_int),
+        ("to", Binary(20, 20)),
+        ("value", big_endian_int),
+        ("data", binary),
+        (
+            "access_list",
+            CountableList(
+                RLPList(
+                    [
+                        Binary(20, 20),
+                        CountableList(Binary(32, 32)),
+                    ]
+                )
+            ),
+        ),
+        ("max_fee_per_blob_gas", big_endian_int),
+        ("blob_versioned_hashes", CountableList(Binary(32, 32))),
+        ("signature_y_parity", big_endian_int),
+        ("signature_r", big_endian_int),
+        ("signature_s", big_endian_int),
     )
 
 

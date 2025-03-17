@@ -1,8 +1,11 @@
 from eth2spec.test.helpers.constants import MINIMAL
 from eth2spec.test.context import (
     spec_state_test,
-    always_bls, with_all_phases, with_presets,
-    spec_test, single_phase,
+    always_bls,
+    with_all_phases,
+    with_presets,
+    spec_test,
+    single_phase,
     with_custom_state,
     scaled_churn_balances_min_churn_limit,
 )
@@ -24,7 +27,8 @@ def test_basic(spec, state):
     privkey = pubkey_to_privkey[state.validators[validator_index].pubkey]
 
     signed_voluntary_exit = sign_voluntary_exit(
-        spec, state, spec.VoluntaryExit(epoch=current_epoch, validator_index=validator_index), privkey)
+        spec, state, spec.VoluntaryExit(epoch=current_epoch, validator_index=validator_index), privkey
+    )
 
     yield from run_voluntary_exit_processing(spec, state, signed_voluntary_exit)
 
@@ -57,7 +61,7 @@ def run_test_success_exit_queue(spec, state):
     current_epoch = spec.get_current_epoch(state)
 
     # exit `MAX_EXITS_PER_EPOCH`
-    initial_indices = spec.get_active_validator_indices(state, current_epoch)[:spec.get_validator_churn_limit(state)]
+    initial_indices = spec.get_active_validator_indices(state, current_epoch)[: spec.get_validator_churn_limit(state)]
 
     # Prepare a bunch of exits, based on the current state
     exit_queue = []
@@ -65,7 +69,8 @@ def run_test_success_exit_queue(spec, state):
         privkey = pubkey_to_privkey[state.validators[index].pubkey]
 
         signed_voluntary_exit = sign_voluntary_exit(
-            spec, state, spec.VoluntaryExit(epoch=current_epoch, validator_index=index), privkey)
+            spec, state, spec.VoluntaryExit(epoch=current_epoch, validator_index=index), privkey
+        )
 
         exit_queue.append(signed_voluntary_exit)
 
@@ -80,17 +85,15 @@ def run_test_success_exit_queue(spec, state):
     privkey = pubkey_to_privkey[state.validators[validator_index].pubkey]
 
     signed_voluntary_exit = sign_voluntary_exit(
-        spec, state, spec.VoluntaryExit(epoch=current_epoch, validator_index=validator_index), privkey)
+        spec, state, spec.VoluntaryExit(epoch=current_epoch, validator_index=validator_index), privkey
+    )
 
     # This is the interesting part of the test: on a pre-state with a full exit queue,
     #  when processing an additional exit, it results in an exit in a later epoch
     yield from run_voluntary_exit_processing(spec, state, signed_voluntary_exit)
 
     for index in initial_indices:
-        assert (
-            state.validators[validator_index].exit_epoch ==
-            state.validators[index].exit_epoch + 1
-        )
+        assert state.validators[validator_index].exit_epoch == state.validators[index].exit_epoch + 1
 
 
 @with_all_phases
@@ -100,11 +103,13 @@ def test_success_exit_queue__min_churn(spec, state):
 
 
 @with_all_phases
-@with_presets([MINIMAL],
-              reason="mainnet config leads to larger validator set than limit of public/private keys pre-generated")
+@with_presets(
+    [MINIMAL], reason="mainnet config leads to larger validator set than limit of public/private keys pre-generated"
+)
 @spec_test
-@with_custom_state(balances_fn=scaled_churn_balances_min_churn_limit,
-                   threshold_fn=lambda spec: spec.config.EJECTION_BALANCE)
+@with_custom_state(
+    balances_fn=scaled_churn_balances_min_churn_limit, threshold_fn=lambda spec: spec.config.EJECTION_BALANCE
+)
 @single_phase
 def test_success_exit_queue__scaled_churn(spec, state):
     churn_limit = spec.get_validator_churn_limit(state)
@@ -123,7 +128,8 @@ def test_default_exit_epoch_subsequent_exit(spec, state):
     privkey = pubkey_to_privkey[state.validators[validator_index].pubkey]
 
     signed_voluntary_exit = sign_voluntary_exit(
-        spec, state, spec.VoluntaryExit(epoch=current_epoch, validator_index=validator_index), privkey)
+        spec, state, spec.VoluntaryExit(epoch=current_epoch, validator_index=validator_index), privkey
+    )
 
     # Exit one validator prior to this new one
     exited_index = spec.get_active_validator_indices(state, current_epoch)[-1]
@@ -182,7 +188,8 @@ def test_invalid_validator_not_active(spec, state):
     state.validators[validator_index].activation_epoch = spec.FAR_FUTURE_EPOCH
 
     signed_voluntary_exit = sign_voluntary_exit(
-        spec, state, spec.VoluntaryExit(epoch=current_epoch, validator_index=validator_index), privkey)
+        spec, state, spec.VoluntaryExit(epoch=current_epoch, validator_index=validator_index), privkey
+    )
 
     yield from run_voluntary_exit_processing(spec, state, signed_voluntary_exit, valid=False)
 
@@ -201,7 +208,8 @@ def test_invalid_validator_already_exited(spec, state):
     state.validators[validator_index].exit_epoch = current_epoch + 2
 
     signed_voluntary_exit = sign_voluntary_exit(
-        spec, state, spec.VoluntaryExit(epoch=current_epoch, validator_index=validator_index), privkey)
+        spec, state, spec.VoluntaryExit(epoch=current_epoch, validator_index=validator_index), privkey
+    )
 
     yield from run_voluntary_exit_processing(spec, state, signed_voluntary_exit, valid=False)
 
@@ -214,11 +222,9 @@ def test_invalid_validator_not_active_long_enough(spec, state):
     privkey = pubkey_to_privkey[state.validators[validator_index].pubkey]
 
     signed_voluntary_exit = sign_voluntary_exit(
-        spec, state, spec.VoluntaryExit(epoch=current_epoch, validator_index=validator_index), privkey)
-
-    assert (
-        current_epoch - state.validators[validator_index].activation_epoch <
-        spec.config.SHARD_COMMITTEE_PERIOD
+        spec, state, spec.VoluntaryExit(epoch=current_epoch, validator_index=validator_index), privkey
     )
+
+    assert current_epoch - state.validators[validator_index].activation_epoch < spec.config.SHARD_COMMITTEE_PERIOD
 
     yield from run_voluntary_exit_processing(spec, state, signed_voluntary_exit, valid=False)

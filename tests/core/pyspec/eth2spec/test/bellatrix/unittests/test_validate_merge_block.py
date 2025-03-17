@@ -9,14 +9,10 @@ from eth2spec.test.helpers.execution_payload import (
 from eth2spec.test.helpers.pow_block import (
     prepare_random_pow_chain,
 )
-from eth2spec.test.context import (
-    spec_state_test,
-    with_bellatrix_and_later,
-    spec_configured_state_test
-)
+from eth2spec.test.context import spec_state_test, with_bellatrix_and_later, spec_configured_state_test
 
 
-TERMINAL_BLOCK_HASH_CONFIG_VAR = '0x0000000000000000000000000000000000000000000000000000000000000001'
+TERMINAL_BLOCK_HASH_CONFIG_VAR = "0x0000000000000000000000000000000000000000000000000000000000000001"
 TERMINAL_BLOCK_HASH = Bytes32(TERMINAL_BLOCK_HASH_CONFIG_VAR)
 
 
@@ -98,10 +94,9 @@ def test_validate_merge_block_fail_after_terminal(spec, state):
 
 
 @with_bellatrix_and_later
-@spec_configured_state_test({
-    'TERMINAL_BLOCK_HASH': TERMINAL_BLOCK_HASH_CONFIG_VAR,
-    'TERMINAL_BLOCK_HASH_ACTIVATION_EPOCH': '0'
-})
+@spec_configured_state_test(
+    {"TERMINAL_BLOCK_HASH": TERMINAL_BLOCK_HASH_CONFIG_VAR, "TERMINAL_BLOCK_HASH_ACTIVATION_EPOCH": "0"}
+)
 def test_validate_merge_block_tbh_override_success(spec, state):
     pow_chain = prepare_random_pow_chain(spec, 2)
     # should fail if TTD check is reached
@@ -115,10 +110,9 @@ def test_validate_merge_block_tbh_override_success(spec, state):
 
 
 @with_bellatrix_and_later
-@spec_configured_state_test({
-    'TERMINAL_BLOCK_HASH': TERMINAL_BLOCK_HASH_CONFIG_VAR,
-    'TERMINAL_BLOCK_HASH_ACTIVATION_EPOCH': '0'
-})
+@spec_configured_state_test(
+    {"TERMINAL_BLOCK_HASH": TERMINAL_BLOCK_HASH_CONFIG_VAR, "TERMINAL_BLOCK_HASH_ACTIVATION_EPOCH": "0"}
+)
 def test_validate_merge_block_fail_parent_hash_is_not_tbh(spec, state):
     pow_chain = prepare_random_pow_chain(spec, 2)
     # shouldn't fail if TTD check is reached
@@ -131,10 +125,9 @@ def test_validate_merge_block_fail_parent_hash_is_not_tbh(spec, state):
 
 
 @with_bellatrix_and_later
-@spec_configured_state_test({
-    'TERMINAL_BLOCK_HASH': TERMINAL_BLOCK_HASH_CONFIG_VAR,
-    'TERMINAL_BLOCK_HASH_ACTIVATION_EPOCH': '1'
-})
+@spec_configured_state_test(
+    {"TERMINAL_BLOCK_HASH": TERMINAL_BLOCK_HASH_CONFIG_VAR, "TERMINAL_BLOCK_HASH_ACTIVATION_EPOCH": "1"}
+)
 def test_validate_merge_block_terminal_block_hash_fail_activation_not_reached(spec, state):
     pow_chain = prepare_random_pow_chain(spec, 2)
     # shouldn't fail if TTD check is reached
@@ -148,10 +141,9 @@ def test_validate_merge_block_terminal_block_hash_fail_activation_not_reached(sp
 
 
 @with_bellatrix_and_later
-@spec_configured_state_test({
-    'TERMINAL_BLOCK_HASH': TERMINAL_BLOCK_HASH_CONFIG_VAR,
-    'TERMINAL_BLOCK_HASH_ACTIVATION_EPOCH': '1'
-})
+@spec_configured_state_test(
+    {"TERMINAL_BLOCK_HASH": TERMINAL_BLOCK_HASH_CONFIG_VAR, "TERMINAL_BLOCK_HASH_ACTIVATION_EPOCH": "1"}
+)
 def test_validate_merge_block_fail_activation_not_reached_parent_hash_is_not_tbh(spec, state):
     pow_chain = prepare_random_pow_chain(spec, 2)
     # shouldn't fail if TTD check is reached

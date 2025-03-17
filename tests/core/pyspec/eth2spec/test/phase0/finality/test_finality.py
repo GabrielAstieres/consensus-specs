@@ -3,12 +3,7 @@ from eth2spec.test.helpers.state import next_epoch_via_block
 from eth2spec.test.helpers.attestations import next_epoch_with_attestations
 
 
-def check_finality(spec,
-                   state,
-                   prev_state,
-                   current_justified_changed,
-                   previous_justified_changed,
-                   finalized_changed):
+def check_finality(spec, state, prev_state, current_justified_changed, previous_justified_changed, finalized_changed):
     if current_justified_changed:
         assert state.current_justified_checkpoint.epoch > prev_state.current_justified_checkpoint.epoch
         assert state.current_justified_checkpoint.root != prev_state.current_justified_checkpoint.root
@@ -33,7 +28,7 @@ def check_finality(spec,
 def test_finality_no_updates_at_genesis(spec, state):
     assert spec.get_current_epoch(state) == spec.GENESIS_EPOCH
 
-    yield 'pre', state
+    yield "pre", state
 
     blocks = []
     for epoch in range(2):
@@ -47,8 +42,8 @@ def test_finality_no_updates_at_genesis(spec, state):
         elif epoch == 1:
             check_finality(spec, state, prev_state, False, False, False)
 
-    yield 'blocks', blocks
-    yield 'post', state
+    yield "blocks", blocks
+    yield "post", state
 
 
 @with_all_phases
@@ -58,7 +53,7 @@ def test_finality_rule_4(spec, state):
     next_epoch_via_block(spec, state)
     next_epoch_via_block(spec, state)
 
-    yield 'pre', state
+    yield "pre", state
 
     blocks = []
     for epoch in range(2):
@@ -72,8 +67,8 @@ def test_finality_rule_4(spec, state):
             check_finality(spec, state, prev_state, True, True, True)
             assert state.finalized_checkpoint == prev_state.current_justified_checkpoint
 
-    yield 'blocks', blocks
-    yield 'post', state
+    yield "blocks", blocks
+    yield "post", state
 
 
 @with_all_phases
@@ -83,7 +78,7 @@ def test_finality_rule_1(spec, state):
     next_epoch_via_block(spec, state)
     next_epoch_via_block(spec, state)
 
-    yield 'pre', state
+    yield "pre", state
 
     blocks = []
     for epoch in range(3):
@@ -99,8 +94,8 @@ def test_finality_rule_1(spec, state):
             check_finality(spec, state, prev_state, True, True, True)
             assert state.finalized_checkpoint == prev_state.previous_justified_checkpoint
 
-    yield 'blocks', blocks
-    yield 'post', state
+    yield "blocks", blocks
+    yield "post", state
 
 
 @with_all_phases
@@ -110,7 +105,7 @@ def test_finality_rule_2(spec, state):
     next_epoch_via_block(spec, state)
     next_epoch_via_block(spec, state)
 
-    yield 'pre', state
+    yield "pre", state
 
     blocks = []
     for epoch in range(3):
@@ -128,8 +123,8 @@ def test_finality_rule_2(spec, state):
 
         blocks += new_blocks
 
-    yield 'blocks', blocks
-    yield 'post', state
+    yield "blocks", blocks
+    yield "post", state
 
 
 @with_all_phases
@@ -143,7 +138,7 @@ def test_finality_rule_3(spec, state):
     next_epoch_via_block(spec, state)
     next_epoch_via_block(spec, state)
 
-    yield 'pre', state
+    yield "pre", state
 
     blocks = []
     prev_state, new_blocks, state = next_epoch_with_attestations(spec, state, True, False)
@@ -174,5 +169,5 @@ def test_finality_rule_3(spec, state):
     check_finality(spec, state, prev_state, True, True, True)
     assert state.finalized_checkpoint == prev_state.current_justified_checkpoint
 
-    yield 'blocks', blocks
-    yield 'post', state
+    yield "blocks", blocks
+    yield "post", state

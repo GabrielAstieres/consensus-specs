@@ -3,16 +3,19 @@ from eth2spec.test.helpers.state import next_epoch, next_slots
 from eth2spec.test.helpers.forks import is_post_electra
 from eth2spec.test.helpers.constants import MINIMAL
 from eth2spec.test.context import (
-    spec_test, spec_state_test,
-    with_all_phases, single_phase,
-    with_custom_state, with_presets,
+    spec_test,
+    spec_state_test,
+    with_all_phases,
+    single_phase,
+    with_custom_state,
+    with_presets,
     scaled_churn_balances_min_churn_limit,
 )
 from eth2spec.test.helpers.epoch_processing import run_epoch_processing_with
 
 
 def run_process_registry_updates(spec, state):
-    yield from run_epoch_processing_with(spec, state, 'process_registry_updates')
+    yield from run_epoch_processing_with(spec, state, "process_registry_updates")
 
 
 @with_all_phases
@@ -57,8 +60,7 @@ def test_activation_queue_to_activated_if_finalized(spec, state):
     assert state.validators[index].activation_epoch != spec.FAR_FUTURE_EPOCH
     assert not spec.is_active_validator(state.validators[index], spec.get_current_epoch(state))
     assert spec.is_active_validator(
-        state.validators[index],
-        spec.compute_activation_exit_epoch(spec.get_current_epoch(state))
+        state.validators[index], spec.compute_activation_exit_epoch(spec.get_current_epoch(state))
     )
 
 
@@ -171,11 +173,13 @@ def test_activation_queue_efficiency_min(spec, state):
 
 
 @with_all_phases
-@with_presets([MINIMAL],
-              reason="mainnet config leads to larger validator set than limit of public/private keys pre-generated")
+@with_presets(
+    [MINIMAL], reason="mainnet config leads to larger validator set than limit of public/private keys pre-generated"
+)
 @spec_test
-@with_custom_state(balances_fn=scaled_churn_balances_min_churn_limit,
-                   threshold_fn=lambda spec: spec.config.EJECTION_BALANCE)
+@with_custom_state(
+    balances_fn=scaled_churn_balances_min_churn_limit, threshold_fn=lambda spec: spec.config.EJECTION_BALANCE
+)
 @single_phase
 def test_activation_queue_efficiency_scaled(spec, state):
     assert spec.get_validator_churn_limit(state) > spec.config.MIN_PER_EPOCH_CHURN_LIMIT
@@ -197,8 +201,7 @@ def test_ejection(spec, state):
     assert state.validators[index].exit_epoch != spec.FAR_FUTURE_EPOCH
     assert spec.is_active_validator(state.validators[index], spec.get_current_epoch(state))
     assert not spec.is_active_validator(
-        state.validators[index],
-        spec.compute_activation_exit_epoch(spec.get_current_epoch(state))
+        state.validators[index], spec.compute_activation_exit_epoch(spec.get_current_epoch(state))
     )
 
 
@@ -224,7 +227,9 @@ def run_test_ejection_past_churn_limit(spec, state):
             if spec.config.EJECTION_BALANCE > per_epoch_churn - (balance_so_far % per_epoch_churn):
                 offset_epoch += 1
             return expected_ejection_epoch + offset_epoch
+
     else:
+
         def map_index_to_exit_epoch(i):
             # first third ejected in normal speed
             if i < mock_ejections // 3:
@@ -249,11 +254,13 @@ def test_ejection_past_churn_limit_min(spec, state):
 
 
 @with_all_phases
-@with_presets([MINIMAL],
-              reason="mainnet config leads to larger validator set than limit of public/private keys pre-generated")
+@with_presets(
+    [MINIMAL], reason="mainnet config leads to larger validator set than limit of public/private keys pre-generated"
+)
 @spec_test
-@with_custom_state(balances_fn=scaled_churn_balances_min_churn_limit,
-                   threshold_fn=lambda spec: spec.config.EJECTION_BALANCE)
+@with_custom_state(
+    balances_fn=scaled_churn_balances_min_churn_limit, threshold_fn=lambda spec: spec.config.EJECTION_BALANCE
+)
 @single_phase
 def test_ejection_past_churn_limit_scaled(spec, state):
     assert spec.get_validator_churn_limit(state) > spec.config.MIN_PER_EPOCH_CHURN_LIMIT
@@ -301,10 +308,7 @@ def run_test_activation_queue_activation_and_ejection(spec, state, num_per_statu
         assert validator.activation_eligibility_epoch != spec.FAR_FUTURE_EPOCH
         assert validator.activation_epoch != spec.FAR_FUTURE_EPOCH
         assert not spec.is_active_validator(validator, spec.get_current_epoch(state))
-        assert spec.is_active_validator(
-            validator,
-            spec.compute_activation_exit_epoch(spec.get_current_epoch(state))
-        )
+        assert spec.is_active_validator(validator, spec.compute_activation_exit_epoch(spec.get_current_epoch(state)))
 
     # any remaining validators do not exit the activation queue
     for validator_index in activation_indices[churn_limit:]:
@@ -322,8 +326,7 @@ def run_test_activation_queue_activation_and_ejection(spec, state, num_per_statu
         assert spec.is_active_validator(validator, spec.get_current_epoch(state))
         queue_offset = i // churn_limit
         assert not spec.is_active_validator(
-            validator,
-            spec.compute_activation_exit_epoch(spec.get_current_epoch(state)) + queue_offset
+            validator, spec.compute_activation_exit_epoch(spec.get_current_epoch(state)) + queue_offset
         )
 
 
@@ -350,11 +353,13 @@ def test_activation_queue_activation_and_ejection__exceed_churn_limit(spec, stat
 
 
 @with_all_phases
-@with_presets([MINIMAL],
-              reason="mainnet config leads to larger validator set than limit of public/private keys pre-generated")
+@with_presets(
+    [MINIMAL], reason="mainnet config leads to larger validator set than limit of public/private keys pre-generated"
+)
 @spec_test
-@with_custom_state(balances_fn=scaled_churn_balances_min_churn_limit,
-                   threshold_fn=lambda spec: spec.config.EJECTION_BALANCE)
+@with_custom_state(
+    balances_fn=scaled_churn_balances_min_churn_limit, threshold_fn=lambda spec: spec.config.EJECTION_BALANCE
+)
 @single_phase
 def test_activation_queue_activation_and_ejection__scaled_churn_limit(spec, state):
     churn_limit = spec.get_validator_churn_limit(state)
@@ -363,11 +368,13 @@ def test_activation_queue_activation_and_ejection__scaled_churn_limit(spec, stat
 
 
 @with_all_phases
-@with_presets([MINIMAL],
-              reason="mainnet config leads to larger validator set than limit of public/private keys pre-generated")
+@with_presets(
+    [MINIMAL], reason="mainnet config leads to larger validator set than limit of public/private keys pre-generated"
+)
 @spec_test
-@with_custom_state(balances_fn=scaled_churn_balances_min_churn_limit,
-                   threshold_fn=lambda spec: spec.config.EJECTION_BALANCE)
+@with_custom_state(
+    balances_fn=scaled_churn_balances_min_churn_limit, threshold_fn=lambda spec: spec.config.EJECTION_BALANCE
+)
 @single_phase
 def test_activation_queue_activation_and_ejection__exceed_scaled_churn_limit(spec, state):
     churn_limit = spec.get_validator_churn_limit(state)
@@ -401,7 +408,7 @@ def test_invalid_large_withdrawable_epoch(spec, state):
     try:
         yield from run_process_registry_updates(spec, state)
     except ValueError:
-        yield 'post', None
+        yield "post", None
         return
 
-    raise AssertionError('expected ValueError')
+    raise AssertionError("expected ValueError")

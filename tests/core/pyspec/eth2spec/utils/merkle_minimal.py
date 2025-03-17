@@ -2,7 +2,7 @@ from eth2spec.utils.hash_function import hash
 from math import log2
 
 
-ZERO_BYTES32 = b'\x00' * 32
+ZERO_BYTES32 = b"\x00" * 32
 
 zerohashes = [ZERO_BYTES32]
 for layer in range(1, 100):

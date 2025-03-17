@@ -9,7 +9,7 @@ from eth2spec.test.helpers.voluntary_exits import get_unslashed_exited_validator
 
 
 def run_process_just_and_fin(spec, state):
-    yield from run_epoch_processing_with(spec, state, 'process_justification_and_finalization')
+    yield from run_epoch_processing_with(spec, state, "process_justification_and_finalization")
 
 
 def add_mock_attestations(spec, state, epoch, source, target, sufficient_support=False, messed_up_target=False):
@@ -65,19 +65,21 @@ def add_mock_attestations(spec, state, epoch, source, target, sufficient_support
 
             # Update state
             if not is_post_altair(spec):
-                attestations.append(spec.PendingAttestation(
-                    aggregation_bits=aggregation_bits,
-                    data=spec.AttestationData(
-                        slot=slot,
-                        beacon_block_root=b'\xff' * 32,  # irrelevant to testing
-                        source=source,
-                        target=target,
-                        index=index,
-                    ),
-                    inclusion_delay=1,
-                ))
+                attestations.append(
+                    spec.PendingAttestation(
+                        aggregation_bits=aggregation_bits,
+                        data=spec.AttestationData(
+                            slot=slot,
+                            beacon_block_root=b"\xff" * 32,  # irrelevant to testing
+                            source=source,
+                            target=target,
+                            index=index,
+                        ),
+                        inclusion_delay=1,
+                    )
+                )
                 if messed_up_target:
-                    attestations[len(attestations) - 1].data.target.root = b'\x99' * 32
+                    attestations[len(attestations) - 1].data.target.root = b"\x99" * 32
             else:
                 for i, index in enumerate(committee):
                     if aggregation_bits[i]:
@@ -88,11 +90,11 @@ def add_mock_attestations(spec, state, epoch, source, target, sufficient_support
 
 
 def get_checkpoints(spec, epoch):
-    c1 = None if epoch < 1 else spec.Checkpoint(epoch=epoch - 1, root=b'\xaa' * 32)
-    c2 = None if epoch < 2 else spec.Checkpoint(epoch=epoch - 2, root=b'\xbb' * 32)
-    c3 = None if epoch < 3 else spec.Checkpoint(epoch=epoch - 3, root=b'\xcc' * 32)
-    c4 = None if epoch < 4 else spec.Checkpoint(epoch=epoch - 4, root=b'\xdd' * 32)
-    c5 = None if epoch < 5 else spec.Checkpoint(epoch=epoch - 5, root=b'\xee' * 32)
+    c1 = None if epoch < 1 else spec.Checkpoint(epoch=epoch - 1, root=b"\xaa" * 32)
+    c2 = None if epoch < 2 else spec.Checkpoint(epoch=epoch - 2, root=b"\xbb" * 32)
+    c3 = None if epoch < 3 else spec.Checkpoint(epoch=epoch - 3, root=b"\xcc" * 32)
+    c4 = None if epoch < 4 else spec.Checkpoint(epoch=epoch - 4, root=b"\xdd" * 32)
+    c5 = None if epoch < 5 else spec.Checkpoint(epoch=epoch - 5, root=b"\xee" * 32)
     return c1, c2, c3, c4, c5
 
 
@@ -118,11 +120,7 @@ def finalize_on_234(spec, state, epoch, sufficient_support):
     state.justification_bits = spec.Bitvector[spec.JUSTIFICATION_BITS_LENGTH]()
     state.justification_bits[1:3] = [1, 1]  # mock 3rd and 4th latest epochs as justified (indices are pre-shift)
     # mock the 2nd latest epoch as justifiable, with 4th as source
-    add_mock_attestations(spec, state,
-                          epoch=epoch - 2,
-                          source=c4,
-                          target=c2,
-                          sufficient_support=sufficient_support)
+    add_mock_attestations(spec, state, epoch=epoch - 2, source=c4, target=c2, sufficient_support=sufficient_support)
 
     # process!
     yield from run_process_just_and_fin(spec, state)
@@ -154,11 +152,7 @@ def finalize_on_23(spec, state, epoch, sufficient_support):
     state.justification_bits = spec.Bitvector[spec.JUSTIFICATION_BITS_LENGTH]()
     state.justification_bits[1] = 1  # mock 3rd latest epoch as justified (index is pre-shift)
     # mock the 2nd latest epoch as justifiable, with 3rd as source
-    add_mock_attestations(spec, state,
-                          epoch=epoch - 2,
-                          source=c3,
-                          target=c2,
-                          sufficient_support=sufficient_support)
+    add_mock_attestations(spec, state, epoch=epoch - 2, source=c3, target=c2, sufficient_support=sufficient_support)
 
     # process!
     yield from run_process_just_and_fin(spec, state)
@@ -190,17 +184,9 @@ def finalize_on_123(spec, state, epoch, sufficient_support):
     state.justification_bits = spec.Bitvector[spec.JUSTIFICATION_BITS_LENGTH]()
     state.justification_bits[1] = 1  # mock 3rd latest epochs as justified (index is pre-shift)
     # mock the 2nd latest epoch as justifiable, with 5th as source
-    add_mock_attestations(spec, state,
-                          epoch=epoch - 2,
-                          source=c5,
-                          target=c2,
-                          sufficient_support=sufficient_support)
+    add_mock_attestations(spec, state, epoch=epoch - 2, source=c5, target=c2, sufficient_support=sufficient_support)
     # mock the 1st latest epoch as justifiable, with 3rd as source
-    add_mock_attestations(spec, state,
-                          epoch=epoch - 1,
-                          source=c3,
-                          target=c1,
-                          sufficient_support=sufficient_support)
+    add_mock_attestations(spec, state, epoch=epoch - 1, source=c3, target=c1, sufficient_support=sufficient_support)
 
     # process!
     yield from run_process_just_and_fin(spec, state)
@@ -232,12 +218,15 @@ def finalize_on_12(spec, state, epoch, sufficient_support, messed_up_target):
     state.justification_bits = spec.Bitvector[spec.JUSTIFICATION_BITS_LENGTH]()
     state.justification_bits[0] = 1  # mock 2nd latest epoch as justified (this is pre-shift)
     # mock the 1st latest epoch as justifiable, with 2nd as source
-    add_mock_attestations(spec, state,
-                          epoch=epoch - 1,
-                          source=c2,
-                          target=c1,
-                          sufficient_support=sufficient_support,
-                          messed_up_target=messed_up_target)
+    add_mock_attestations(
+        spec,
+        state,
+        epoch=epoch - 1,
+        source=c2,
+        target=c1,
+        sufficient_support=sufficient_support,
+        messed_up_target=messed_up_target,
+    )
 
     # process!
     yield from run_process_just_and_fin(spec, state)
@@ -337,10 +326,7 @@ def test_balance_threshold_with_exited_validators(spec, state):
     assert len(exited_validators) != 0
 
     source = state.current_justified_checkpoint
-    target = spec.Checkpoint(
-        epoch=epoch,
-        root=spec.get_block_root(state, epoch)
-    )
+    target = spec.Checkpoint(epoch=epoch, root=spec.get_block_root(state, epoch))
     add_mock_attestations(
         spec,
         state,

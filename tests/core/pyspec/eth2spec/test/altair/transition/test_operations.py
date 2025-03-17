@@ -18,6 +18,7 @@ from eth2spec.test.helpers.fork_transition import (
 # PROPOSER_SLASHING
 #
 
+
 @with_fork_metas([ForkMeta(pre_fork_name=pre, post_fork_name=post, fork_epoch=2) for pre, post in ALL_PRE_POST_FORKS])
 @always_bls
 def test_transition_with_proposer_slashing_right_after_fork(state, fork_epoch, spec, post_spec, pre_tag, post_tag):

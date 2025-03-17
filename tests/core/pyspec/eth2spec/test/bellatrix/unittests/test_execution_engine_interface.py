@@ -23,10 +23,7 @@ def test_noop_execution_engine_notify_forkchoice_updated(spec, state):
 
     # Test notify_forkchoice_updated
     result = engine.notify_forkchoice_updated(
-        head_block_hash=Bytes32(),
-        safe_block_hash=Bytes32(),
-        finalized_block_hash=Bytes32(),
-        payload_attributes=None
+        head_block_hash=Bytes32(), safe_block_hash=Bytes32(), finalized_block_hash=Bytes32(), payload_attributes=None
     )
 
     # Verify behavior

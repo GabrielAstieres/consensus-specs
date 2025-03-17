@@ -48,7 +48,8 @@ def run_is_candidate_block(spec, eth1_block, period_start, success=True):
 def get_min_new_period_epochs(spec):
     return (
         (spec.config.SECONDS_PER_ETH1_BLOCK * spec.config.ETH1_FOLLOW_DISTANCE * 2)  # to seconds
-        // spec.config.SECONDS_PER_SLOT // spec.SLOTS_PER_EPOCH
+        // spec.config.SECONDS_PER_SLOT
+        // spec.SLOTS_PER_EPOCH
     )
 
 
@@ -202,12 +203,12 @@ def test_get_eth1_vote_consensus_vote(spec, state):
     block_1 = spec.Eth1Block(
         timestamp=period_start - spec.config.SECONDS_PER_ETH1_BLOCK * spec.config.ETH1_FOLLOW_DISTANCE - 1,
         deposit_count=state.eth1_data.deposit_count,
-        deposit_root=b'\x04' * 32,
+        deposit_root=b"\x04" * 32,
     )
     block_2 = spec.Eth1Block(
         timestamp=period_start - spec.config.SECONDS_PER_ETH1_BLOCK * spec.config.ETH1_FOLLOW_DISTANCE,
         deposit_count=state.eth1_data.deposit_count + 1,
-        deposit_root=b'\x05' * 32,
+        deposit_root=b"\x05" * 32,
     )
     eth1_chain = [block_1, block_2]
     eth1_data_votes = []
@@ -238,12 +239,12 @@ def test_get_eth1_vote_tie(spec, state):
     block_1 = spec.Eth1Block(
         timestamp=period_start - spec.config.SECONDS_PER_ETH1_BLOCK * spec.config.ETH1_FOLLOW_DISTANCE - 1,
         deposit_count=state.eth1_data.deposit_count,
-        deposit_root=b'\x04' * 32,
+        deposit_root=b"\x04" * 32,
     )
     block_2 = spec.Eth1Block(
         timestamp=period_start - spec.config.SECONDS_PER_ETH1_BLOCK * spec.config.ETH1_FOLLOW_DISTANCE,
         deposit_count=state.eth1_data.deposit_count + 1,
-        deposit_root=b'\x05' * 32,
+        deposit_root=b"\x05" * 32,
     )
     eth1_chain = [block_1, block_2]
     eth1_data_votes = []
@@ -277,7 +278,7 @@ def test_get_eth1_vote_chain_in_past(spec, state):
     block_1 = spec.Eth1Block(
         timestamp=period_start - spec.config.SECONDS_PER_ETH1_BLOCK * spec.config.ETH1_FOLLOW_DISTANCE,
         deposit_count=state.eth1_data.deposit_count - 1,  # Chain prior to current eth1data
-        deposit_root=b'\x42' * 32,
+        deposit_root=b"\x42" * 32,
     )
     eth1_chain = [block_1]
     eth1_data_votes = []
@@ -331,8 +332,8 @@ def test_compute_fork_digest(spec, state):
     actual_fork_digest = spec.compute_fork_digest(state.fork.current_version, state.genesis_validators_root)
 
     expected_fork_data_root = spec.hash_tree_root(
-        spec.ForkData(current_version=state.fork.current_version,
-                      genesis_validators_root=state.genesis_validators_root))
+        spec.ForkData(current_version=state.fork.current_version, genesis_validators_root=state.genesis_validators_root)
+    )
     expected_fork_digest = spec.ForkDigest(expected_fork_data_root[:4])
 
     assert actual_fork_digest == expected_fork_digest

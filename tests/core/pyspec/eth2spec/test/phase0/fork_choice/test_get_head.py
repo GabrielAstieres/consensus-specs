@@ -40,22 +40,24 @@ def test_genesis(spec, state):
     test_steps = []
     # Initialization
     store, anchor_block = get_genesis_forkchoice_store_and_block(spec, state)
-    yield 'anchor_state', state
-    yield 'anchor_block', anchor_block
+    yield "anchor_state", state
+    yield "anchor_block", anchor_block
 
     anchor_root = get_anchor_root(spec, state)
     assert spec.get_head(store) == anchor_root
-    test_steps.append({
-        'checks': {
-            'genesis_time': int(store.genesis_time),
-            'head': get_formatted_head_output(spec, store),
+    test_steps.append(
+        {
+            "checks": {
+                "genesis_time": int(store.genesis_time),
+                "head": get_formatted_head_output(spec, store),
+            }
         }
-    })
+    )
 
-    yield 'steps', test_steps
+    yield "steps", test_steps
 
     if is_post_altair(spec):
-        yield 'description', 'meta', f"Although it's not phase 0, we may use {spec.fork} spec to start testnets."
+        yield "description", "meta", f"Although it's not phase 0, we may use {spec.fork} spec to start testnets."
 
 
 @with_altair_and_later
@@ -64,8 +66,8 @@ def test_chain_no_attestations(spec, state):
     test_steps = []
     # Initialization
     store, anchor_block = get_genesis_forkchoice_store_and_block(spec, state)
-    yield 'anchor_state', state
-    yield 'anchor_block', anchor_block
+    yield "anchor_state", state
+    yield "anchor_block", anchor_block
 
     anchor_root = get_anchor_root(spec, state)
     assert spec.get_head(store) == anchor_root
@@ -84,7 +86,7 @@ def test_chain_no_attestations(spec, state):
     assert spec.get_head(store) == spec.hash_tree_root(block_2)
     output_head_check(spec, store, test_steps)
 
-    yield 'steps', test_steps
+    yield "steps", test_steps
 
 
 @with_altair_and_later
@@ -95,8 +97,8 @@ def test_split_tie_breaker_no_attestations(spec, state):
 
     # Initialization
     store, anchor_block = get_genesis_forkchoice_store_and_block(spec, state)
-    yield 'anchor_state', state
-    yield 'anchor_block', anchor_block
+    yield "anchor_state", state
+    yield "anchor_block", anchor_block
     anchor_root = get_anchor_root(spec, state)
     assert spec.get_head(store) == anchor_root
     output_head_check(spec, store, test_steps)
@@ -109,7 +111,7 @@ def test_split_tie_breaker_no_attestations(spec, state):
     # Create additional block at slot 1
     block_2_state = genesis_state.copy()
     block_2 = build_empty_block_for_next_slot(spec, block_2_state)
-    block_2.body.graffiti = b'\x42' * 32
+    block_2.body.graffiti = b"\x42" * 32
     signed_block_2 = state_transition_and_sign_block(spec, block_2_state, block_2)
 
     # Tick time past slot 1 so proposer score boost does not apply
@@ -123,7 +125,7 @@ def test_split_tie_breaker_no_attestations(spec, state):
     assert spec.get_head(store) == highest_root
     output_head_check(spec, store, test_steps)
 
-    yield 'steps', test_steps
+    yield "steps", test_steps
 
 
 @with_altair_and_later
@@ -134,8 +136,8 @@ def test_shorter_chain_but_heavier_weight(spec, state):
 
     # Initialization
     store, anchor_block = get_genesis_forkchoice_store_and_block(spec, state)
-    yield 'anchor_state', state
-    yield 'anchor_block', anchor_block
+    yield "anchor_state", state
+    yield "anchor_block", anchor_block
     anchor_root = get_anchor_root(spec, state)
     assert spec.get_head(store) == anchor_root
     output_head_check(spec, store, test_steps)
@@ -150,7 +152,7 @@ def test_shorter_chain_but_heavier_weight(spec, state):
     # build short tree
     short_state = genesis_state.copy()
     short_block = build_empty_block_for_next_slot(spec, short_state)
-    short_block.body.graffiti = b'\x42' * 32
+    short_block.body.graffiti = b"\x42" * 32
     signed_short_block = state_transition_and_sign_block(spec, short_state, short_block)
     yield from tick_and_add_block(spec, store, signed_short_block, test_steps)
 
@@ -163,7 +165,7 @@ def test_shorter_chain_but_heavier_weight(spec, state):
     assert spec.get_head(store) == spec.hash_tree_root(short_block)
     output_head_check(spec, store, test_steps)
 
-    yield 'steps', test_steps
+    yield "steps", test_steps
 
 
 @with_altair_and_later
@@ -173,8 +175,8 @@ def test_filtered_block_tree(spec, state):
     test_steps = []
     # Initialization
     store, anchor_block = get_genesis_forkchoice_store_and_block(spec, state)
-    yield 'anchor_state', state
-    yield 'anchor_block', anchor_block
+    yield "anchor_state", state
+    yield "anchor_block", anchor_block
     anchor_root = get_anchor_root(spec, state)
     assert spec.get_head(store) == anchor_root
     output_head_check(spec, store, test_steps)
@@ -240,7 +242,7 @@ def test_filtered_block_tree(spec, state):
     assert spec.get_head(store) == expected_head_root
     output_head_check(spec, store, test_steps)
 
-    yield 'steps', test_steps
+    yield "steps", test_steps
 
 
 @with_altair_and_later
@@ -251,8 +253,8 @@ def test_proposer_boost_correct_head(spec, state):
 
     # Initialization
     store, anchor_block = get_genesis_forkchoice_store_and_block(spec, state)
-    yield 'anchor_state', state
-    yield 'anchor_block', anchor_block
+    yield "anchor_state", state
+    yield "anchor_block", anchor_block
     anchor_root = get_anchor_root(spec, state)
     assert spec.get_head(store) == anchor_root
     output_head_check(spec, store, test_steps)
@@ -296,7 +298,7 @@ def test_proposer_boost_correct_head(spec, state):
     assert spec.get_head(store) == spec.hash_tree_root(block_2)
     output_head_check(spec, store, test_steps)
 
-    yield 'steps', test_steps
+    yield "steps", test_steps
 
 
 @with_altair_and_later
@@ -307,8 +309,8 @@ def test_discard_equivocations_on_attester_slashing(spec, state):
 
     # Initialization
     store, anchor_block = get_genesis_forkchoice_store_and_block(spec, state)
-    yield 'anchor_state', state
-    yield 'anchor_block', anchor_block
+    yield "anchor_state", state
+    yield "anchor_block", anchor_block
     anchor_root = get_anchor_root(spec, state)
     assert spec.get_head(store) == anchor_root
     output_head_check(spec, store, test_steps)
@@ -369,7 +371,7 @@ def test_discard_equivocations_on_attester_slashing(spec, state):
     assert spec.get_head(store) == spec.hash_tree_root(block_2)
     output_head_check(spec, store, test_steps)
 
-    yield 'steps', test_steps
+    yield "steps", test_steps
 
 
 @with_altair_and_later
@@ -406,8 +408,8 @@ def test_discard_equivocations_slashed_validator_censoring(spec, state):
     anchor_state = state.copy()
     # Generate an anchor block with correct state root
     anchor_block = spec.BeaconBlock(state_root=anchor_state.hash_tree_root())
-    yield 'anchor_state', anchor_state
-    yield 'anchor_block', anchor_block
+    yield "anchor_state", anchor_state
+    yield "anchor_block", anchor_block
 
     # Get a new store with the anchor state & anchor block
     store = spec.get_forkchoice_store(anchor_state, anchor_block)
@@ -427,7 +429,7 @@ def test_discard_equivocations_slashed_validator_censoring(spec, state):
 
     state_2 = state.copy()
     block_2 = build_empty_block_for_next_slot(spec, state_2)
-    block_2.body.graffiti = block_2.body.graffiti = b'\x42' * 32
+    block_2.body.graffiti = block_2.body.graffiti = b"\x42" * 32
     signed_block_2 = state_transition_and_sign_block(spec, state_2, block_2)
 
     assert block_1.slot == block_2.slot == eqv_slot
@@ -466,7 +468,7 @@ def test_discard_equivocations_slashed_validator_censoring(spec, state):
     assert spec.get_head(store) == block_high_root
     output_head_check(spec, store, test_steps)
 
-    yield 'steps', test_steps
+    yield "steps", test_steps
 
 
 @with_altair_and_later
@@ -483,8 +485,8 @@ def test_voting_source_within_two_epoch(spec, state):
     test_steps = []
     # Initialization
     store, anchor_block = get_genesis_forkchoice_store_and_block(spec, state)
-    yield 'anchor_state', state
-    yield 'anchor_block', anchor_block
+    yield "anchor_state", state
+    yield "anchor_block", anchor_block
     current_time = state.slot * spec.config.SECONDS_PER_SLOT + store.genesis_time
     on_tick_and_append_step(spec, store, current_time, test_steps)
     assert store.time == current_time
@@ -495,7 +497,8 @@ def test_voting_source_within_two_epoch(spec, state):
     # Fill epoch 1 to 3
     for _ in range(3):
         state, store, _ = yield from apply_next_epoch_with_attestations(
-            spec, state, store, True, True, test_steps=test_steps)
+            spec, state, store, True, True, test_steps=test_steps
+        )
 
     assert spec.compute_epoch_at_slot(spec.get_current_slot(store)) == 4
     assert state.current_justified_checkpoint.epoch == store.justified_checkpoint.epoch == 3
@@ -506,7 +509,8 @@ def test_voting_source_within_two_epoch(spec, state):
 
     # Fill epoch 4
     state, store, _ = yield from apply_next_epoch_with_attestations(
-        spec, state, store, True, True, test_steps=test_steps)
+        spec, state, store, True, True, test_steps=test_steps
+    )
 
     assert spec.compute_epoch_at_slot(spec.get_current_slot(store)) == 5
     assert state.current_justified_checkpoint.epoch == store.justified_checkpoint.epoch == 4
@@ -536,13 +540,11 @@ def test_voting_source_within_two_epoch(spec, state):
     # assert store.voting_source[last_fork_block_root].epoch + 2 >= \
     #     spec.compute_epoch_at_slot(spec.get_current_slot(store))
     assert store.finalized_checkpoint.root == spec.get_checkpoint_block(
-        store,
-        last_fork_block_root,
-        store.finalized_checkpoint.epoch
+        store, last_fork_block_root, store.finalized_checkpoint.epoch
     )
     assert spec.get_head(store) == last_fork_block_root
 
-    yield 'steps', test_steps
+    yield "steps", test_steps
 
 
 @with_altair_and_later
@@ -559,8 +561,8 @@ def test_voting_source_beyond_two_epoch(spec, state):
     test_steps = []
     # Initialization
     store, anchor_block = get_genesis_forkchoice_store_and_block(spec, state)
-    yield 'anchor_state', state
-    yield 'anchor_block', anchor_block
+    yield "anchor_state", state
+    yield "anchor_block", anchor_block
     current_time = state.slot * spec.config.SECONDS_PER_SLOT + store.genesis_time
     on_tick_and_append_step(spec, store, current_time, test_steps)
     assert store.time == current_time
@@ -571,7 +573,8 @@ def test_voting_source_beyond_two_epoch(spec, state):
     # Fill epoch 1 to 3
     for _ in range(3):
         state, store, _ = yield from apply_next_epoch_with_attestations(
-            spec, state, store, True, True, test_steps=test_steps)
+            spec, state, store, True, True, test_steps=test_steps
+        )
 
     assert spec.compute_epoch_at_slot(spec.get_current_slot(store)) == 4
     assert state.current_justified_checkpoint.epoch == store.justified_checkpoint.epoch == 3
@@ -583,7 +586,8 @@ def test_voting_source_beyond_two_epoch(spec, state):
     # Fill epoch 4 and 5
     for _ in range(2):
         state, store, _ = yield from apply_next_epoch_with_attestations(
-            spec, state, store, True, True, test_steps=test_steps)
+            spec, state, store, True, True, test_steps=test_steps
+        )
 
     assert spec.compute_epoch_at_slot(spec.get_current_slot(store)) == 6
     assert state.current_justified_checkpoint.epoch == store.justified_checkpoint.epoch == 5
@@ -620,13 +624,11 @@ def test_voting_source_beyond_two_epoch(spec, state):
     # assert store.voting_source[last_fork_block_root].epoch + 2 < \
     #     spec.compute_epoch_at_slot(spec.get_current_slot(store))
     assert store.finalized_checkpoint.root == spec.get_checkpoint_block(
-        store,
-        last_fork_block_root,
-        store.finalized_checkpoint.epoch
+        store, last_fork_block_root, store.finalized_checkpoint.epoch
     )
     assert spec.get_head(store) == correct_head
 
-    yield 'steps', test_steps
+    yield "steps", test_steps
 
 
 """

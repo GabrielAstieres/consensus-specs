@@ -47,8 +47,8 @@ def test_simple_blob_data(spec, state):
     test_steps = []
     # Initialization
     store, anchor_block = get_genesis_forkchoice_store_and_block(spec, state)
-    yield 'anchor_state', state
-    yield 'anchor_block', anchor_block
+    yield "anchor_state", state
+    yield "anchor_block", anchor_block
     current_time = state.slot * spec.config.SECONDS_PER_SLOT + store.genesis_time
     on_tick_and_append_step(spec, store, current_time, test_steps)
     assert store.time == current_time
@@ -71,7 +71,7 @@ def test_simple_blob_data(spec, state):
 
     assert spec.get_head(store) == signed_block.message.hash_tree_root()
 
-    yield 'steps', test_steps
+    yield "steps", test_steps
 
 
 @with_all_phases_from_except(DENEB, [FULU])
@@ -82,8 +82,8 @@ def test_invalid_incorrect_proof(spec, state):
     test_steps = []
     # Initialization
     store, anchor_block = get_genesis_forkchoice_store_and_block(spec, state)
-    yield 'anchor_state', state
-    yield 'anchor_block', anchor_block
+    yield "anchor_state", state
+    yield "anchor_block", anchor_block
     current_time = state.slot * spec.config.SECONDS_PER_SLOT + store.genesis_time
     on_tick_and_append_step(spec, store, current_time, test_steps)
     assert store.time == current_time
@@ -92,14 +92,14 @@ def test_invalid_incorrect_proof(spec, state):
     block, blobs, _ = get_block_with_blob(spec, state, rng=rng)
     signed_block = state_transition_and_sign_block(spec, state, block)
     # Insert incorrect proof
-    blob_kzg_proofs = [b'\xc0' + b'\x00' * 47]
+    blob_kzg_proofs = [b"\xc0" + b"\x00" * 47]
     blob_data = BlobData(blobs, blob_kzg_proofs)
 
     yield from tick_and_add_block_with_data(spec, store, signed_block, test_steps, blob_data, valid=False)
 
     assert spec.get_head(store) != signed_block.message.hash_tree_root()
 
-    yield 'steps', test_steps
+    yield "steps", test_steps
 
 
 @with_all_phases_from_except(DENEB, [FULU])
@@ -110,8 +110,8 @@ def test_invalid_data_unavailable(spec, state):
     test_steps = []
     # Initialization
     store, anchor_block = get_genesis_forkchoice_store_and_block(spec, state)
-    yield 'anchor_state', state
-    yield 'anchor_block', anchor_block
+    yield "anchor_state", state
+    yield "anchor_block", anchor_block
     current_time = state.slot * spec.config.SECONDS_PER_SLOT + store.genesis_time
     on_tick_and_append_step(spec, store, current_time, test_steps)
     assert store.time == current_time
@@ -127,7 +127,7 @@ def test_invalid_data_unavailable(spec, state):
 
     assert spec.get_head(store) != signed_block.message.hash_tree_root()
 
-    yield 'steps', test_steps
+    yield "steps", test_steps
 
 
 @with_all_phases_from_except(DENEB, [FULU])
@@ -138,8 +138,8 @@ def test_invalid_wrong_proofs_length(spec, state):
     test_steps = []
     # Initialization
     store, anchor_block = get_genesis_forkchoice_store_and_block(spec, state)
-    yield 'anchor_state', state
-    yield 'anchor_block', anchor_block
+    yield "anchor_state", state
+    yield "anchor_block", anchor_block
     current_time = state.slot * spec.config.SECONDS_PER_SLOT + store.genesis_time
     on_tick_and_append_step(spec, store, current_time, test_steps)
     assert store.time == current_time
@@ -155,7 +155,7 @@ def test_invalid_wrong_proofs_length(spec, state):
 
     assert spec.get_head(store) != signed_block.message.hash_tree_root()
 
-    yield 'steps', test_steps
+    yield "steps", test_steps
 
 
 @with_all_phases_from_except(DENEB, [FULU])
@@ -166,8 +166,8 @@ def test_invalid_wrong_blobs_length(spec, state):
     test_steps = []
     # Initialization
     store, anchor_block = get_genesis_forkchoice_store_and_block(spec, state)
-    yield 'anchor_state', state
-    yield 'anchor_block', anchor_block
+    yield "anchor_state", state
+    yield "anchor_block", anchor_block
     current_time = state.slot * spec.config.SECONDS_PER_SLOT + store.genesis_time
     on_tick_and_append_step(spec, store, current_time, test_steps)
     assert store.time == current_time
@@ -183,4 +183,4 @@ def test_invalid_wrong_blobs_length(spec, state):
 
     assert spec.get_head(store) != signed_block.message.hash_tree_root()
 
-    yield 'steps', test_steps
+    yield "steps", test_steps

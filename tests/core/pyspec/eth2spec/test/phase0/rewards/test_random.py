@@ -6,7 +6,8 @@ from eth2spec.test.context import (
     spec_state_test,
     with_custom_state,
     single_phase,
-    low_balances, misc_balances,
+    low_balances,
+    misc_balances,
 )
 import eth2spec.test.helpers.rewards as rewards_helpers
 from eth2spec.test.helpers.random import (

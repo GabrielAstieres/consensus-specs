@@ -34,12 +34,8 @@ from pysetup.helpers import (
     objects_to_spec,
     parse_config_vars,
 )
-from pysetup.md_doc_paths import (
-    get_md_doc_paths
-)
-from pysetup.spec_builders import (
-    spec_builders
-)
+from pysetup.md_doc_paths import get_md_doc_paths
+from pysetup.spec_builders import spec_builders
 from pysetup.typing import (
     BuildTarget,
     ProtocolDefinition,
@@ -49,12 +45,15 @@ from pysetup.typing import (
 
 
 # Ignore '1.5.0-alpha.*' to '1.5.0a*' messages.
-warnings.filterwarnings('ignore', message='Normalizing .* to .*')
+warnings.filterwarnings("ignore", message="Normalizing .* to .*")
+
 
 # Ignore 'running' and 'creating' messages
 class PyspecFilter(logging.Filter):
     def filter(self, record):
-        return not record.getMessage().startswith(('running ', 'creating '))
+        return not record.getMessage().startswith(("running ", "creating "))
+
+
 logging.getLogger().addFilter(PyspecFilter())
 
 
@@ -83,7 +82,7 @@ def _get_self_type_from_source(source: str) -> Optional[str]:
     args = fn.args.args
     if len(args) == 0:
         return None
-    if args[0].arg != 'self':
+    if args[0].arg != "self":
         return None
     if args[0].annotation is None:
         return None
@@ -108,56 +107,56 @@ def _get_class_info_from_source(source: str) -> Tuple[str, Optional[str]]:
 
 @lru_cache(maxsize=None)
 def _is_constant_id(name: str) -> bool:
-    if name[0] not in string.ascii_uppercase + '_':
+    if name[0] not in string.ascii_uppercase + "_":
         return False
-    return all(map(lambda c: c in string.ascii_uppercase + '_' + string.digits, name[1:]))
+    return all(map(lambda c: c in string.ascii_uppercase + "_" + string.digits, name[1:]))
 
 
 @lru_cache(maxsize=None)
 def _load_kzg_trusted_setups(preset_name):
-    trusted_setups_file_path = str(Path(__file__).parent) + '/presets/' + preset_name + '/trusted_setups/trusted_setup_4096.json'
+    trusted_setups_file_path = (
+        str(Path(__file__).parent) + "/presets/" + preset_name + "/trusted_setups/trusted_setup_4096.json"
+    )
 
-    with open(trusted_setups_file_path, 'r') as f:
+    with open(trusted_setups_file_path, "r") as f:
         json_data = json.load(f)
-        trusted_setup_G1_monomial = json_data['g1_monomial']
-        trusted_setup_G1_lagrange = json_data['g1_lagrange']
-        trusted_setup_G2_monomial = json_data['g2_monomial']
+        trusted_setup_G1_monomial = json_data["g1_monomial"]
+        trusted_setup_G1_lagrange = json_data["g1_lagrange"]
+        trusted_setup_G2_monomial = json_data["g2_monomial"]
 
     return trusted_setup_G1_monomial, trusted_setup_G1_lagrange, trusted_setup_G2_monomial
+
 
 @lru_cache(maxsize=None)
 def _load_curdleproofs_crs(preset_name):
     """
     NOTE: File generated from https://github.com/asn-d6/curdleproofs/blob/8e8bf6d4191fb6a844002f75666fb7009716319b/tests/crs.rs#L53-L67
     """
-    file_path = str(Path(__file__).parent) + '/presets/' + preset_name + '/trusted_setups/curdleproofs_crs.json'
+    file_path = str(Path(__file__).parent) + "/presets/" + preset_name + "/trusted_setups/curdleproofs_crs.json"
 
-    with open(file_path, 'r') as f:
+    with open(file_path, "r") as f:
         json_data = json.load(f)
 
     return json_data
 
 
-ALL_KZG_SETUPS = {
-    'minimal': _load_kzg_trusted_setups('minimal'),
-    'mainnet': _load_kzg_trusted_setups('mainnet')
-}
+ALL_KZG_SETUPS = {"minimal": _load_kzg_trusted_setups("minimal"), "mainnet": _load_kzg_trusted_setups("mainnet")}
 
 ALL_CURDLEPROOFS_CRS = {
-    'minimal': _load_curdleproofs_crs('minimal'),
-    'mainnet': _load_curdleproofs_crs('mainnet'),
+    "minimal": _load_curdleproofs_crs("minimal"),
+    "mainnet": _load_curdleproofs_crs("mainnet"),
 }
 
 
 @lru_cache(maxsize=None)
 def _get_eth2_spec_comment(child: LinkRefDef) -> Optional[str]:
     _, _, title = child._parse_info
-    if not (title[0] == "(" and title[len(title)-1] == ")"):
+    if not (title[0] == "(" and title[len(title) - 1] == ")"):
         return None
-    title = title[1:len(title)-1]
+    title = title[1 : len(title) - 1]
     if not title.startswith(ETH2_SPEC_COMMENT_PREFIX):
         return None
-    return title[len(ETH2_SPEC_COMMENT_PREFIX):].strip()
+    return title[len(ETH2_SPEC_COMMENT_PREFIX) :].strip()
 
 
 @lru_cache(maxsize=None)
@@ -167,40 +166,37 @@ def _parse_value(name: str, typed_value: str, type_hint: Optional[str] = None) -
         comment = "noqa: E501"
 
     typed_value = typed_value.strip()
-    if '(' not in typed_value:
+    if "(" not in typed_value:
         return VariableDefinition(type_name=None, value=typed_value, comment=comment, type_hint=type_hint)
-    i = typed_value.index('(')
+    i = typed_value.index("(")
     type_name = typed_value[:i]
 
-    return VariableDefinition(type_name=type_name, value=typed_value[i+1:-1], comment=comment, type_hint=type_hint)
+    return VariableDefinition(type_name=type_name, value=typed_value[i + 1 : -1], comment=comment, type_hint=type_hint)
 
 
 def _update_constant_vars_with_kzg_setups(constant_vars, preset_dep_constant_vars, preset_name):
     comment = "noqa: E501"
     kzg_setups = ALL_KZG_SETUPS[preset_name]
-    preset_dep_constant_vars['KZG_SETUP_G1_MONOMIAL'] = VariableDefinition(
-        preset_dep_constant_vars['KZG_SETUP_G1_MONOMIAL'].value,
-        str(kzg_setups[0]),
-        comment, None
+    preset_dep_constant_vars["KZG_SETUP_G1_MONOMIAL"] = VariableDefinition(
+        preset_dep_constant_vars["KZG_SETUP_G1_MONOMIAL"].value, str(kzg_setups[0]), comment, None
     )
-    preset_dep_constant_vars['KZG_SETUP_G1_LAGRANGE'] = VariableDefinition(
-        preset_dep_constant_vars['KZG_SETUP_G1_LAGRANGE'].value,
-        str(kzg_setups[1]),
-        comment, None
+    preset_dep_constant_vars["KZG_SETUP_G1_LAGRANGE"] = VariableDefinition(
+        preset_dep_constant_vars["KZG_SETUP_G1_LAGRANGE"].value, str(kzg_setups[1]), comment, None
     )
-    constant_vars['KZG_SETUP_G2_MONOMIAL'] = VariableDefinition(
-        constant_vars['KZG_SETUP_G2_MONOMIAL'].value,
-        str(kzg_setups[2]),
-        comment, None
+    constant_vars["KZG_SETUP_G2_MONOMIAL"] = VariableDefinition(
+        constant_vars["KZG_SETUP_G2_MONOMIAL"].value, str(kzg_setups[2]), comment, None
     )
 
 
 def _update_constant_vars_with_curdleproofs_crs(constant_vars, preset_dep_constant_vars, preset_name):
     comment = "noqa: E501"
-    constant_vars['CURDLEPROOFS_CRS'] = VariableDefinition(
+    constant_vars["CURDLEPROOFS_CRS"] = VariableDefinition(
         None,
-        'curdleproofs.CurdleproofsCrs.from_json(json.dumps(' + str(ALL_CURDLEPROOFS_CRS[str(preset_name)]).replace('0x', '') + '))',
-        comment, None
+        "curdleproofs.CurdleproofsCrs.from_json(json.dumps("
+        + str(ALL_CURDLEPROOFS_CRS[str(preset_name)]).replace("0x", "")
+        + "))",
+        comment,
+        None,
     )
 
 
@@ -257,8 +253,8 @@ def get_spec(file_name: Path, preset: Dict[str, str], config: Dict[str, str], pr
                 try:
                     assert class_name == current_name
                 except Exception:
-                    print('class_name', class_name)
-                    print('current_name', current_name)
+                    print("class_name", class_name)
+                    print("current_name", current_name)
                     raise
 
                 if parent_class:
@@ -312,13 +308,17 @@ def get_spec(file_name: Path, preset: Dict[str, str], config: Dict[str, str], pr
 
                     value_def = _parse_value(name, value)
                     if name in preset:
-                        preset_vars[name] = VariableDefinition(value_def.type_name, preset[name], value_def.comment, None)
+                        preset_vars[name] = VariableDefinition(
+                            value_def.type_name, preset[name], value_def.comment, None
+                        )
                     elif name in config:
-                        config_vars[name] = VariableDefinition(value_def.type_name, config[name], value_def.comment, None)
+                        config_vars[name] = VariableDefinition(
+                            value_def.type_name, config[name], value_def.comment, None
+                        )
                     else:
-                        if name in ('ENDIANNESS', 'KZG_ENDIANNESS'):
+                        if name in ("ENDIANNESS", "KZG_ENDIANNESS"):
                             # Deal with mypy Literal typing check
-                            value_def = _parse_value(name, value, type_hint='Final')
+                            value_def = _parse_value(name, value, type_hint="Final")
                         if any(k in value for k in preset) or any(k in value for k in preset_dep_constant_vars):
                             preset_dep_constant_vars[name] = value_def
                         else:
@@ -330,10 +330,10 @@ def get_spec(file_name: Path, preset: Dict[str, str], config: Dict[str, str], pr
                 should_skip = True
 
     # Load KZG trusted setup from files
-    if any('KZG_SETUP' in name for name in constant_vars):
+    if any("KZG_SETUP" in name for name in constant_vars):
         _update_constant_vars_with_kzg_setups(constant_vars, preset_dep_constant_vars, preset_name)
 
-    if any('CURDLEPROOFS_CRS' in name for name in constant_vars):
+    if any("CURDLEPROOFS_CRS" in name for name in constant_vars):
         _update_constant_vars_with_curdleproofs_crs(constant_vars, preset_dep_constant_vars, preset_name)
 
     custom_types: Dict[str, str] = {}
@@ -367,7 +367,7 @@ def load_preset(preset_files: Sequence[Path]) -> Dict[str, str]:
     """
     preset = {}
     for fork_file in preset_files:
-        yaml = YAML(typ='base')
+        yaml = YAML(typ="base")
         fork_preset: dict = yaml.load(fork_file)
         if fork_preset is None:  # for empty YAML files
             continue
@@ -384,16 +384,14 @@ def load_config(config_path: Path) -> Dict[str, str]:
     """
     Loads the given configuration file.
     """
-    yaml = YAML(typ='base')
+    yaml = YAML(typ="base")
     config_data = yaml.load(config_path)
     return parse_config_vars(config_data)
 
 
-def build_spec(fork: str,
-               preset_name: str,
-               source_files: Sequence[Path],
-               preset_files: Sequence[Path],
-               config_file: Path) -> str:
+def build_spec(
+    fork: str, preset_name: str, source_files: Sequence[Path], preset_files: Sequence[Path], config_file: Path
+) -> str:
     preset = load_preset(tuple(preset_files))
     config = load_config(config_file)
     all_specs = [get_spec(spec, preset, config, preset_name) for spec in source_files]
@@ -430,18 +428,18 @@ class PySpecCommand(Command):
 
     # The format is (long option, short option, description).
     user_options = [
-        ('spec-fork=', None, "Spec fork to tag build with. Used to select md-docs defaults."),
-        ('md-doc-paths=', None, "List of paths of markdown files to build spec with"),
-        ('build-targets=', None, "Names, directory paths of compile-time presets, and default config paths."),
-        ('out-dir=', None, "Output directory to write spec package to")
+        ("spec-fork=", None, "Spec fork to tag build with. Used to select md-docs defaults."),
+        ("md-doc-paths=", None, "List of paths of markdown files to build spec with"),
+        ("build-targets=", None, "Names, directory paths of compile-time presets, and default config paths."),
+        ("out-dir=", None, "Output directory to write spec package to"),
     ]
 
     def initialize_options(self):
         """Set default values for options."""
         # Each user option must be listed here with their default value.
         self.spec_fork = PHASE0
-        self.md_doc_paths = ''
-        self.out_dir = 'pyspec_output'
+        self.md_doc_paths = ""
+        self.out_dir = "pyspec_output"
         self.build_targets = """
                 minimal:presets/minimal:configs/minimal.yaml
                 mainnet:presets/mainnet:configs/mainnet.yaml
@@ -463,7 +461,7 @@ class PySpecCommand(Command):
         self.parsed_build_targets = []
         for target in self.build_targets.split():
             target = target.strip()
-            data = target.split(':')
+            data = target.split(":")
             if len(data) != 3:
                 raise Exception('invalid target, expected "name:preset_dir:config_file" format, but got: %s' % target)
             name, preset_dir_path, config_path = data
@@ -482,8 +480,8 @@ class PySpecCommand(Command):
         if not self.dry_run:
             dir_util.mkpath(self.out_dir)
 
-        print(f'Building pyspec: {self.spec_fork}')
-        for (name, preset_paths, config_path) in self.parsed_build_targets:
+        print(f"Building pyspec: {self.spec_fork}")
+        for name, preset_paths, config_path in self.parsed_build_targets:
             spec_str = build_spec(
                 spec_builders[self.spec_fork].fork,
                 name,
@@ -492,15 +490,17 @@ class PySpecCommand(Command):
                 config_path,
             )
             if self.dry_run:
-                self.announce('dry run successfully prepared contents for spec.'
-                              f' out dir: "{self.out_dir}", spec fork: "{self.spec_fork}", build target: "{name}"')
+                self.announce(
+                    "dry run successfully prepared contents for spec."
+                    f' out dir: "{self.out_dir}", spec fork: "{self.spec_fork}", build target: "{name}"'
+                )
                 self.debug_print(spec_str)
             else:
-                with open(os.path.join(self.out_dir, name+'.py'), 'w') as out:
+                with open(os.path.join(self.out_dir, name + ".py"), "w") as out:
                     out.write(spec_str)
 
         if not self.dry_run:
-            with open(os.path.join(self.out_dir, '__init__.py'), 'w') as out:
+            with open(os.path.join(self.out_dir, "__init__.py"), "w") as out:
                 # `mainnet` is the default spec.
                 out.write("from . import mainnet as spec  # noqa:F401\n")
 
@@ -514,10 +514,10 @@ class BuildPyCommand(build_py):
     def run_pyspec_cmd(self, spec_fork: str, **opts):
         cmd_obj: PySpecCommand = self.distribution.reinitialize_command("pyspec")
         cmd_obj.spec_fork = spec_fork
-        cmd_obj.out_dir = os.path.join(self.build_lib, 'eth2spec', spec_fork)
+        cmd_obj.out_dir = os.path.join(self.build_lib, "eth2spec", spec_fork)
         for k, v in opts.items():
             setattr(cmd_obj, k, v)
-        self.run_command('pyspec')
+        self.run_command("pyspec")
 
     def run(self):
         for spec_fork in spec_builders:
@@ -528,6 +528,7 @@ class BuildPyCommand(build_py):
 
 class PyspecDevCommand(Command):
     """Build the markdown files in-place to their source location for testing."""
+
     description = "Build the markdown files in-place to their source location for testing."
     user_options = []
 
@@ -540,11 +541,11 @@ class PyspecDevCommand(Command):
     def run_pyspec_cmd(self, spec_fork: str, **opts):
         cmd_obj: PySpecCommand = self.distribution.reinitialize_command("pyspec")
         cmd_obj.spec_fork = spec_fork
-        eth2spec_dir = convert_path(self.distribution.package_dir['eth2spec'])
+        eth2spec_dir = convert_path(self.distribution.package_dir["eth2spec"])
         cmd_obj.out_dir = os.path.join(eth2spec_dir, spec_fork)
         for k, v in opts.items():
             setattr(cmd_obj, k, v)
-        self.run_command('pyspec')
+        self.run_command("pyspec")
 
     def run(self):
         for spec_fork in spec_builders:
@@ -552,9 +553,9 @@ class PyspecDevCommand(Command):
 
 
 commands = {
-    'pyspec': PySpecCommand,
-    'build_py': BuildPyCommand,
-    'pyspecdev': PyspecDevCommand,
+    "pyspec": PySpecCommand,
+    "build_py": BuildPyCommand,
+    "pyspecdev": PyspecDevCommand,
 }
 
 with open("README.md", "rt", encoding="utf8") as f:
@@ -568,7 +569,7 @@ with open("README.md", "rt", encoding="utf8") as f:
 #    -> In case of a commit on master without git tag, target the next version
 #        with ".postN" (release candidate, numbered) suffixed.
 # See https://www.python.org/dev/peps/pep-0440/#public-version-identifiers
-with open(os.path.join('tests', 'core', 'pyspec', 'eth2spec', 'VERSION.txt')) as f:
+with open(os.path.join("tests", "core", "pyspec", "eth2spec", "VERSION.txt")) as f:
     spec_version = f.read().strip()
 
 setup(
@@ -578,11 +579,11 @@ setup(
     url="https://github.com/ethereum/consensus-specs",
     include_package_data=False,
     package_data={
-        'configs': ['*.yaml'],
-        'eth2spec': ['VERSION.txt'],
-        'presets': ['**/*.yaml', '**/*.json'],
-        'specs': ['**/*.md'],
-        'sync': ['optimistic.md'],
+        "configs": ["*.yaml"],
+        "eth2spec": ["VERSION.txt"],
+        "presets": ["**/*.yaml", "**/*.json"],
+        "specs": ["**/*.md"],
+        "sync": ["optimistic.md"],
     },
     package_dir={
         "configs": "configs",
@@ -591,7 +592,7 @@ setup(
         "specs": "specs",
         "sync": "sync",
     },
-    packages=find_packages(where='tests/core/pyspec') + ['configs', 'presets', 'specs', 'presets', 'sync'],
+    packages=find_packages(where="tests/core/pyspec") + ["configs", "presets", "specs", "presets", "sync"],
     py_modules=["eth2spec"],
     cmdclass=commands,
 )

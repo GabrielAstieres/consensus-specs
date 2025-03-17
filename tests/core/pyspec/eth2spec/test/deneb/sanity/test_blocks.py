@@ -20,9 +20,18 @@ from eth2spec.test.helpers.blob import (
 )
 
 
-def run_block_with_blobs(spec, state, blob_count, tx_count=1, blob_gas_used=1, excess_blob_gas=1,
-                         non_blob_tx_count=0, rng=random.Random(7777), valid=True):
-    yield 'pre', state
+def run_block_with_blobs(
+    spec,
+    state,
+    blob_count,
+    tx_count=1,
+    blob_gas_used=1,
+    excess_blob_gas=1,
+    non_blob_tx_count=0,
+    rng=random.Random(7777),
+    valid=True,
+):
+    yield "pre", state
 
     block = build_empty_block_for_next_slot(spec, state)
     txs = []
@@ -48,8 +57,8 @@ def run_block_with_blobs(spec, state, blob_count, tx_count=1, blob_gas_used=1, e
     else:
         signed_block = state_transition_and_sign_block(spec, state, block, expect_fail=True)
 
-    yield 'blocks', [signed_block]
-    yield 'post', state if valid else None
+    yield "blocks", [signed_block]
+    yield "post", state if valid else None
 
 
 @with_deneb_and_later

@@ -12,14 +12,14 @@ def _run_compute_columns_for_custody_group(spec, rng, custody_group=None):
         custody_group = rng.randint(0, spec.config.NUMBER_OF_CUSTODY_GROUPS - 1)
 
     result = spec.compute_columns_for_custody_group(custody_group)
-    yield 'custody_group', 'meta', custody_group
+    yield "custody_group", "meta", custody_group
 
     assert len(result) == len(set(result))
     assert len(result) == spec.config.NUMBER_OF_COLUMNS // spec.config.NUMBER_OF_CUSTODY_GROUPS
     assert all(i < spec.config.NUMBER_OF_COLUMNS for i in result)
     python_list_result = [int(i) for i in result]
 
-    yield 'result', 'meta', python_list_result
+    yield "result", "meta", python_list_result
 
 
 @with_fulu_and_later
