@@ -86,9 +86,7 @@ class SignedInclusionList(Container):
 #### New `is_valid_inclusion_list_signature`
 
 ```python
-def is_valid_inclusion_list_signature(
-        state: BeaconState,
-        signed_inclusion_list: SignedInclusionList) -> bool:
+def is_valid_inclusion_list_signature(state: BeaconState, signed_inclusion_list: SignedInclusionList) -> bool:
     """
     Check if ``signed_inclusion_list`` has a valid signature.
     """
@@ -105,16 +103,16 @@ def is_valid_inclusion_list_signature(
 #### New `get_inclusion_list_committee`
 
 ```python
-def get_inclusion_list_committee(state: BeaconState,
-                                 slot: Slot) -> Vector[ValidatorIndex, INCLUSION_LIST_COMMITTEE_SIZE]:
+def get_inclusion_list_committee(
+    state: BeaconState, slot: Slot
+) -> Vector[ValidatorIndex, INCLUSION_LIST_COMMITTEE_SIZE]:
     epoch = compute_epoch_at_slot(slot)
     seed = get_seed(state, epoch, DOMAIN_INCLUSION_LIST_COMMITTEE)
     indices = get_active_validator_indices(state, epoch)
     start = (slot % SLOTS_PER_EPOCH) * INCLUSION_LIST_COMMITTEE_SIZE
     end = start + INCLUSION_LIST_COMMITTEE_SIZE
     return [
-        indices[compute_shuffled_index(uint64(i % len(indices)), uint64(len(indices)), seed)]
-        for i in range(start, end)
+        indices[compute_shuffled_index(uint64(i % len(indices)), uint64(len(indices)), seed)] for i in range(start, end)
     ]
 ```
 
@@ -143,11 +141,13 @@ class NewPayloadRequest(object):
 *Note*: The function `is_valid_block_hash` is modified to include the additional `inclusion_list_transactions`.
 
 ```python
-def is_valid_block_hash(self: ExecutionEngine,
-                        execution_payload: ExecutionPayload,
-                        parent_beacon_block_root: Root,
-                        execution_requests_list: Sequence[bytes],
-                        inclusion_list_transactions: Sequence[Transaction]) -> bool:
+def is_valid_block_hash(
+    self: ExecutionEngine,
+    execution_payload: ExecutionPayload,
+    parent_beacon_block_root: Root,
+    execution_requests_list: Sequence[bytes],
+    inclusion_list_transactions: Sequence[Transaction],
+) -> bool:
     """
     Return ``True`` if and only if ``execution_payload.block_hash`` is computed correctly.
     """
@@ -159,11 +159,13 @@ def is_valid_block_hash(self: ExecutionEngine,
 *Note*: The function `notify_new_payload` is modified to include the additional `inclusion_list_transactions`.
 
 ```python
-def notify_new_payload(self: ExecutionEngine,
-                       execution_payload: ExecutionPayload,
-                       parent_beacon_block_root: Root,
-                       execution_requests_list: Sequence[bytes],
-                       inclusion_list_transactions: Sequence[Transaction]) -> bool:
+def notify_new_payload(
+    self: ExecutionEngine,
+    execution_payload: ExecutionPayload,
+    parent_beacon_block_root: Root,
+    execution_requests_list: Sequence[bytes],
+    inclusion_list_transactions: Sequence[Transaction],
+) -> bool:
     """
     Return ``True`` if and only if ``execution_payload`` and ``execution_requests_list``
     are valid with respect to ``self.execution_state``.
@@ -180,23 +182,19 @@ def notify_new_payload(self: ExecutionEngine,
 `inclusion_list_transactions` when calling `notify_new_payload` in EIP-7805.
 
 ```python
-def verify_and_notify_new_payload(self: ExecutionEngine,
-                                  new_payload_request: NewPayloadRequest) -> bool:
+def verify_and_notify_new_payload(self: ExecutionEngine, new_payload_request: NewPayloadRequest) -> bool:
     """
     Return ``True`` if and only if ``new_payload_request`` is valid with respect to ``self.execution_state``.
     """
     execution_payload = new_payload_request.execution_payload
     parent_beacon_block_root = new_payload_request.parent_beacon_block_root
     execution_requests_list = get_execution_requests_list(new_payload_request.execution_requests)
-    inclusion_list_transactions = new_payload_request.inclusion_list_transactions # [New in EIP-7805]
+    inclusion_list_transactions = new_payload_request.inclusion_list_transactions  # [New in EIP-7805]
 
-    if b'' in execution_payload.transactions:
+    if b"" in execution_payload.transactions:
         return False
 
-    if not self.is_valid_block_hash(
-            execution_payload,
-            parent_beacon_block_root,
-            execution_requests_list):
+    if not self.is_valid_block_hash(execution_payload, parent_beacon_block_root, execution_requests_list):
         return False
 
     if not self.is_valid_versioned_hashes(new_payload_request):
@@ -204,10 +202,8 @@ def verify_and_notify_new_payload(self: ExecutionEngine,
 
     # [Modified in EIP-7805]
     if not self.notify_new_payload(
-            execution_payload,
-            parent_beacon_block_root,
-            execution_requests_list,
-            inclusion_list_transactions):
+        execution_payload, parent_beacon_block_root, execution_requests_list, inclusion_list_transactions
+    ):
         return False
 
     return True

@@ -65,9 +65,9 @@ class Store(object):
 #### New `validate_inclusion_lists`
 
 ```python
-def validate_inclusion_lists(store: Store,
-                             inclusion_list_transactions: Sequence[Transaction],
-                             execution_payload: ExecutionPayload) -> None:
+def validate_inclusion_lists(
+    store: Store, inclusion_list_transactions: Sequence[Transaction], execution_payload: ExecutionPayload
+) -> None:
     """
     The ``execution_payload`` satisfies ``inclusion_list_transactions`` validity conditions either
     when all transactions are present in payload or when any missing transactions are found to be
@@ -95,7 +95,6 @@ def get_attester_head(store: Store, head_root: Root) -> Root:
     if head_root in store.unsatisfied_inclusion_list_blocks:
         return head_block.parent_root
     return head_root
-
 ```
 
 ##### Modified `get_proposer_head`
@@ -135,8 +134,17 @@ def get_proposer_head(store: Store, head_root: Root, slot: Slot) -> Root:
     # Check that the missing votes are assigned to the parent and not being hoarded.
     parent_strong = is_parent_strong(store, parent_root)
 
-    reorg_prerequisites = all([shuffling_stable, ffg_competitive, finalization_ok,
-                               proposing_on_time, single_slot_reorg, head_weak, parent_strong])
+    reorg_prerequisites = all(
+        [
+            shuffling_stable,
+            ffg_competitive,
+            finalization_ok,
+            proposing_on_time,
+            single_slot_reorg,
+            head_weak,
+            parent_strong,
+        ]
+    )
 
     # Check that the head block is in the unsatisfied inclusion list blocks
     inclusion_list_not_satisfied = head_root in store.unsatisfied_inclusion_list_blocks  # [New in EIP-7805]
@@ -153,10 +161,11 @@ def get_proposer_head(store: Store, head_root: Root, slot: Slot) -> Root:
 
 ```python
 def on_inclusion_list(
-        store: Store,
-        state: BeaconState,
-        signed_inclusion_list: SignedInclusionList,
-        inclusion_list_committee: Vector[ValidatorIndex, INCLUSION_LIST_COMMITTEE_SIZE]) -> None:
+    store: Store,
+    state: BeaconState,
+    signed_inclusion_list: SignedInclusionList,
+    inclusion_list_committee: Vector[ValidatorIndex, INCLUSION_LIST_COMMITTEE_SIZE],
+) -> None:
     """
     Verify the inclusion list and import it into the fork choice store. If there exists more than
     one inclusion list in the store with the same slot and validator index, add the equivocator to
@@ -192,8 +201,7 @@ def on_inclusion_list(
     if validator_index not in store.inclusion_list_equivocators[(message.slot, root)]:
         if validator_index in [il.validator_index for il in store.inclusion_lists[(message.slot, root)]]:
             validator_inclusion_list = [
-                il for il in store.inclusion_lists[(message.slot, root)]
-                if il.validator_index == validator_index
+                il for il in store.inclusion_lists[(message.slot, root)] if il.validator_index == validator_index
             ][0]
             if validator_inclusion_list != message:
                 # We have equivocation evidence for `validator_index`, record it as equivocator

@@ -58,6 +58,7 @@ VENV = venv
 PYTHON_VENV = $(VENV)/bin/python3
 PIP_VENV = $(VENV)/bin/pip3
 CODESPELL_VENV = $(VENV)/bin/codespell
+BLACKEN_DOCS_VENV = $(VENV)/bin/blacken-docs
 
 # Make a virtual environment.
 $(VENV):
@@ -172,7 +173,6 @@ serve_docs: _copy_docs
 # Checks
 ###############################################################################
 
-FLAKE8_CONFIG = $(CURDIR)/flake8.ini
 MYPY_CONFIG = $(CURDIR)/mypy.ini
 PYLINT_CONFIG = $(CURDIR)/pylint.ini
 
@@ -204,9 +204,11 @@ _check_toc: $(MARKDOWN_FILES:=.toc)
 # Check for mistakes.
 lint: pyspec _check_toc
 	@$(CODESPELL_VENV) . --skip "./.git,$(VENV),$(PYSPEC_DIR)/.mypy_cache" -I .codespell-whitelist
-	@$(PYTHON_VENV) -m flake8 --config $(FLAKE8_CONFIG) $(PYSPEC_DIR)/eth2spec
-	@$(PYTHON_VENV) -m flake8 --config $(FLAKE8_CONFIG) $(TEST_GENERATORS_DIR)
-	@$(PYTHON_VENV) -m pylint --rcfile $(PYLINT_CONFIG) $(PYLINT_SCOPE)
+	@for file in $(MARKDOWN_FILES); do \
+		$(BLACKEN_DOCS_VENV) --line-length 120 $$file; \
+	done
+	@$(PYTHON_VENV) -m black $(PYSPEC_DIR)/eth2spec
+	@$(PYTHON_VENV) -m black $(TEST_GENERATORS_DIR)
 	@$(PYTHON_VENV) -m mypy --config-file $(MYPY_CONFIG) $(MYPY_SCOPE)
 
 ###############################################################################

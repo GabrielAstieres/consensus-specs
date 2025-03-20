@@ -91,10 +91,10 @@ The sequence of sidecars associated with a block and can be obtained by first co
 `get_data_column_sidecars(signed_block, cells_and_kzg_proofs)`.
 
 ```python
-def get_data_column_sidecars(signed_block: SignedBeaconBlock,
-                             cells_and_kzg_proofs: Sequence[Tuple[
-        Vector[Cell, CELLS_PER_EXT_BLOB],
-        Vector[KZGProof, CELLS_PER_EXT_BLOB]]]) -> Sequence[DataColumnSidecar]:
+def get_data_column_sidecars(
+    signed_block: SignedBeaconBlock,
+    cells_and_kzg_proofs: Sequence[Tuple[Vector[Cell, CELLS_PER_EXT_BLOB], Vector[KZGProof, CELLS_PER_EXT_BLOB]]],
+) -> Sequence[DataColumnSidecar]:
     """
     Given a signed block and the cells/proofs associated with each blob in the
     block, assemble the sidecars which can be distributed to peers.
@@ -104,7 +104,7 @@ def get_data_column_sidecars(signed_block: SignedBeaconBlock,
     signed_block_header = compute_signed_block_header(signed_block)
     kzg_commitments_inclusion_proof = compute_merkle_proof(
         signed_block.message.body,
-        get_generalized_index(BeaconBlockBody, 'blob_kzg_commitments'),
+        get_generalized_index(BeaconBlockBody, "blob_kzg_commitments"),
     )
 
     sidecars = []
@@ -113,14 +113,16 @@ def get_data_column_sidecars(signed_block: SignedBeaconBlock,
         for cells, proofs in cells_and_kzg_proofs:
             column_cells.append(cells[column_index])
             column_proofs.append(proofs[column_index])
-        sidecars.append(DataColumnSidecar(
-            index=column_index,
-            column=column_cells,
-            kzg_commitments=blob_kzg_commitments,
-            kzg_proofs=column_proofs,
-            signed_block_header=signed_block_header,
-            kzg_commitments_inclusion_proof=kzg_commitments_inclusion_proof,
-        ))
+        sidecars.append(
+            DataColumnSidecar(
+                index=column_index,
+                column=column_cells,
+                kzg_commitments=blob_kzg_commitments,
+                kzg_proofs=column_proofs,
+                signed_block_header=signed_block_header,
+                kzg_commitments_inclusion_proof=kzg_commitments_inclusion_proof,
+            )
+        )
     return sidecars
 ```
 
