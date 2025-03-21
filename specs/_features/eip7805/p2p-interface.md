@@ -1,5 +1,12 @@
 # EIP-7805 -- Networking
 
+# Table of Contents
+* [Modifications in EIP-7805](#Modifications-in-EIP-7805)
+	* [Configuration](#Configuration)
+	* [The gossip domain: gossipsub](#The-gossip-domain:-gossipsub)
+	* [The Req/Resp domain](#The-Req/Resp-domain)
+
+
 This document contains the consensus-layer networking specification for EIP-7805.
 
 <!-- START doctoc generated TOC please keep comment here to allow auto update -->
