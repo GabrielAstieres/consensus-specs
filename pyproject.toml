@@ -18,6 +18,7 @@ dependencies = [
   "eth-typing==3.5.2",
   "eth-utils==2.3.2",
   "lru-dict==1.2.0",
+  "markdown-toc==1.2.6",
   "marko==1.0.2",
   "milagro_bls_binding==1.9.0",
   "py_arkworks_bls12381==0.3.8",

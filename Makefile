@@ -188,7 +188,7 @@ MARKDOWN_FILES = $(wildcard $(SPEC_DIR)/*/*.md) \
 # Generate ToC sections & save copy of original if modified.
 %.toc:
 	@cp $* $*.tmp; \
-	doctoc $* > /dev/null; \
+	markdown-toc $* > /dev/null; \
 	if diff -q $* $*.tmp > /dev/null; then \
 		echo "Good $*"; \
 		rm $*.tmp; \
