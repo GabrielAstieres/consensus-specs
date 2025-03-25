@@ -36,14 +36,14 @@ test = [
   "pytest==8.3.5",
 ]
 lint = [
+  "black==22.3.0",
+  "blacken-docs==1.16.0",
   "codespell==2.4.1",
-  "flake8==7.2.0",
   "mdformat-gfm-alerts==1.0.1",
   "mdformat-gfm==0.4.1",
   "mdformat-toc==0.3.0",
   "mdformat==0.7.22",
   "mypy==1.15.0",
-  "pylint==3.3.6",
 ]
 generator = [
   "filelock==3.18.0",
@@ -57,3 +57,6 @@ docs = [
   "mkdocs-material==9.6.10",
   "mkdocs==1.6.1",
 ]
+
+[tool.black]
+line-length = 88
