@@ -189,7 +189,7 @@ lint: pyspec
 	@$(MDFORMAT_VENV) --number $(MARKDOWN_FILES)
 	@$(CODESPELL_VENV) . --skip "./.git,$(VENV),$(PYSPEC_DIR)/.mypy_cache" -I .codespell-whitelist
 	@for file in $(MARKDOWN_FILES); do \
-		$(BLACKEN_DOCS_VENV) && blacken-docs $$file; \
+		$(BLACKEN_DOCS_VENV) $$file; \
 	done
 	@$(PYTHON_VENV) -m black $(PYSPEC_DIR)/eth2spec
 	@$(PYTHON_VENV) -m black $(TEST_GENERATORS_DIR)
