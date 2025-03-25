@@ -172,24 +172,19 @@ class ExecutionPayloadHeader(Container):
 
 ```python
 class BeaconState(Container):
-    # Versioning
     genesis_time: uint64
     genesis_validators_root: Root
     slot: Slot
     fork: Fork
-    # History
     latest_block_header: BeaconBlockHeader
     block_roots: Vector[Root, SLOTS_PER_HISTORICAL_ROOT]
     state_roots: Vector[Root, SLOTS_PER_HISTORICAL_ROOT]
     historical_roots: List[Root, HISTORICAL_ROOTS_LIMIT]
-    # Eth1
     eth1_data: Eth1Data
     eth1_data_votes: List[Eth1Data, EPOCHS_PER_ETH1_VOTING_PERIOD * SLOTS_PER_EPOCH]
     eth1_deposit_index: uint64
-    # Registry
     validators: List[Validator, VALIDATOR_REGISTRY_LIMIT]
     balances: List[Gwei, VALIDATOR_REGISTRY_LIMIT]
-    # Randomness
     randao_mixes: Vector[Bytes32, EPOCHS_PER_HISTORICAL_VECTOR]
     # Slashings
     slashings: Vector[Gwei, EPOCHS_PER_SLASHINGS_VECTOR]  # Per-epoch sums of slashed effective balances
@@ -201,9 +196,7 @@ class BeaconState(Container):
     previous_justified_checkpoint: Checkpoint
     current_justified_checkpoint: Checkpoint
     finalized_checkpoint: Checkpoint
-    # Inactivity
     inactivity_scores: List[uint64, VALIDATOR_REGISTRY_LIMIT]
-    # Sync
     current_sync_committee: SyncCommittee
     next_sync_committee: SyncCommittee
     # Execution
@@ -211,7 +204,6 @@ class BeaconState(Container):
     # Withdrawals
     next_withdrawal_index: WithdrawalIndex
     next_withdrawal_validator_index: ValidatorIndex
-    # Deep history valid from Capella onwards
     historical_summaries: List[HistoricalSummary, HISTORICAL_ROOTS_LIMIT]
 ```
 
