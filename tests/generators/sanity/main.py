@@ -2,13 +2,16 @@ import argparse
 from eth2spec.test.helpers.constants import PHASE0, ALTAIR, BELLATRIX, CAPELLA, DENEB, ELECTRA, FULU
 from eth2spec.gen_helpers.gen_from_tests.gen import run_state_test_generators, combine_mods, check_mods
 
-parser = argparse.ArgumentParser()
-parser.add_argument('--test_name', type=str, required=False, help='Test desired')
-args = parser.parse_args()
-test_name = args.test_name
-
 
 if __name__ == "__main__":
+
+    parser = argparse.ArgumentParser()
+    parser.add_argument('--test_name', type=str, required=False, help='Test desired')
+    parser.add_argument('--fork_name', type=str, required=False, help='Fork for the desired test')
+    parser.add_argument('--output', type=str, required=True)
+    args = parser.parse_args()
+    test_name = args.test_name
+    fork_name = args.fork_name
 
     if test_name == 'test_name':
         phase_0_mods = {key: 'eth2spec.test.phase0.sanity.test_' + key for key in [
@@ -63,41 +66,12 @@ if __name__ == "__main__":
         check_mods(all_mods, "sanity")
 
         run_state_test_generators(runner_name="sanity", all_mods=all_mods)
+
     else:
-        phase_0_mods = {'eth2spec.test.phase0.sanity.' + test_name}
-
-        _new_altair_mods = {'eth2spec.test.altair.sanity.' + test_name}
-
-        altair_mods = combine_mods(_new_altair_mods, phase_0_mods)
-
-        _new_bellatrix_mods = {'eth2spec.test.bellatrix.sanity.' + test_name}
-
-        bellatrix_mods = combine_mods(_new_bellatrix_mods, altair_mods)
-
-        _new_capella_mods = {'eth2spec.test.capella.sanity.' + test_name}
-
-        capella_mods = combine_mods(_new_capella_mods, bellatrix_mods)
-
-        _new_deneb_mods = {'eth2spec.test.deneb.sanity.' + test_name}
-
-        deneb_mods = combine_mods(_new_deneb_mods, capella_mods)
-
-        _new_electra_mods = {'eth2spec.test.electra.sanity.' + test_name}
-
-        electra_mods = combine_mods(_new_electra_mods, deneb_mods)
-
-        # No additional Fulu specific sanity tests
-        fulu_mods = electra_mods
-
+        custom_mod = {test_name: 'eth2spec.test.'+fork_name+'.sanity.' + test_name}
+        
         all_mods = {
-            PHASE0: phase_0_mods,
-            ALTAIR: altair_mods,
-            BELLATRIX: bellatrix_mods,
-            CAPELLA: capella_mods,
-            DENEB: deneb_mods,
-            ELECTRA: electra_mods,
-            FULU: fulu_mods,
+            fork_name: custom_mod
         }
-        check_mods(all_mods, "sanity")
 
-        run_state_test_generators(runner_name="sanity", all_mods=all_mods)
+        run_state_test_generators(runner_name="sanity", all_mods=custom_mod)
