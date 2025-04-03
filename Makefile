@@ -241,6 +241,11 @@ gen_%: pyspec
 gen_all: $(GENERATOR_TARGETS)
 	@$(MAKE) detect_errors
 
+# Run generator for a single test
+# make gen_single_test test_name=desired_test
+gen_single_test: pyspec
+	@$(PYTHON_VENV) $(GENERATOR_DIR)/single_generator/main.py --test_name=$(test_name)
+
 # Detect errors in generators.
 detect_errors: $(TEST_VECTOR_DIR)
 	@incomplete_files=$$(find $(TEST_VECTOR_DIR) -name "INCOMPLETE"); \
