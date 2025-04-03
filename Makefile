@@ -243,8 +243,14 @@ gen_all: $(GENERATOR_TARGETS)
 
 # Run generator for a single test
 # make gen_single_test test_name=desired_test
-gen_single_test: pyspec
-	@$(PYTHON_VENV) $(GENERATOR_DIR)/single_generator/main.py --test_name=$(test_name)
+# gen_single_test: pyspec
+	# @$(PYTHON_VENV) $(GENERATOR_DIR)/single_generator/main.py --test_name=$(test_name)
+
+# Run one generator.
+# This will forcibly rebuild pyspec just in case.
+gen_single_test_%: pyspec
+	@mkdir -p $(TEST_VECTOR_DIR)
+	@$(PYTHON_VENV) $(GENERATOR_DIR)/$*/main.py --test_name=$(test_name) \
 
 # Detect errors in generators.
 detect_errors: $(TEST_VECTOR_DIR)
