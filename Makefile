@@ -227,6 +227,13 @@ gen_%: pyspec
 gen_all: $(GENERATOR_TARGETS)
 	@$(MAKE) detect_errors
 
+# Run one generator.
+# Example of command: make gen_single_test_sanity test_name=test_slots_2 fork_name=phase0
+gen_single_test_%: pyspec
+	@mkdir -p $(TEST_VECTOR_DIR)
+	@$(PYTHON_VENV) $(GENERATOR_DIR)/$*/main.py --test_name=$(test_name) --fork_name=$(fork_name) \
+	--output $(TEST_VECTOR_DIR)
+
 # Detect errors in generators.
 detect_errors: $(TEST_VECTOR_DIR)
 	@incomplete_files=$$(find $(TEST_VECTOR_DIR) -name "INCOMPLETE"); \
