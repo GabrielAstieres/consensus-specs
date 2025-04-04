@@ -59,7 +59,6 @@ PYTHON_VENV = $(VENV)/bin/python3
 PIP_VENV = $(VENV)/bin/pip3
 CODESPELL_VENV = $(VENV)/bin/codespell
 MDFORMAT_VENV = $(VENV)/bin/mdformat
-MDFORMAT_BLACK_VENV = $(VENV)/bin/mdformat_black
 
 # Make a virtual environment.
 $(VENV):
@@ -188,9 +187,6 @@ MARKDOWN_FILES = $(wildcard $(SPEC_DIR)/*/*.md) \
 lint: pyspec
 	@$(MDFORMAT_VENV) --number $(MARKDOWN_FILES)
 	@$(CODESPELL_VENV) . --skip "./.git,$(VENV),$(PYSPEC_DIR)/.mypy_cache" -I .codespell-whitelist
-	@for file in $(MARKDOWN_FILES); do \
-		$(MDFORMAT_BLACK_VENV) $$file; \
-	done
 	@$(PYTHON_VENV) -m black $(PYSPEC_DIR)/eth2spec
 	@$(PYTHON_VENV) -m black $(TEST_GENERATORS_DIR)
 	@$(PYTHON_VENV) -m mypy --config-file $(MYPY_CONFIG) $(MYPY_SCOPE)
