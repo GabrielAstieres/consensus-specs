@@ -44,7 +44,9 @@ def upgrade_lc_header_to_deneb(pre: capella.LightClientHeader) -> LightClientHea
 ```
 
 ```python
-def upgrade_lc_bootstrap_to_deneb(pre: capella.LightClientBootstrap) -> LightClientBootstrap:
+def upgrade_lc_bootstrap_to_deneb(
+    pre: capella.LightClientBootstrap,
+) -> LightClientBootstrap:
     return LightClientBootstrap(
         header=upgrade_lc_header_to_deneb(pre.header),
         current_sync_committee=pre.current_sync_committee,
@@ -66,7 +68,9 @@ def upgrade_lc_update_to_deneb(pre: capella.LightClientUpdate) -> LightClientUpd
 ```
 
 ```python
-def upgrade_lc_finality_update_to_deneb(pre: capella.LightClientFinalityUpdate) -> LightClientFinalityUpdate:
+def upgrade_lc_finality_update_to_deneb(
+    pre: capella.LightClientFinalityUpdate,
+) -> LightClientFinalityUpdate:
     return LightClientFinalityUpdate(
         attested_header=upgrade_lc_header_to_deneb(pre.attested_header),
         finalized_header=upgrade_lc_header_to_deneb(pre.finalized_header),
@@ -77,7 +81,9 @@ def upgrade_lc_finality_update_to_deneb(pre: capella.LightClientFinalityUpdate) 
 ```
 
 ```python
-def upgrade_lc_optimistic_update_to_deneb(pre: capella.LightClientOptimisticUpdate) -> LightClientOptimisticUpdate:
+def upgrade_lc_optimistic_update_to_deneb(
+    pre: capella.LightClientOptimisticUpdate,
+) -> LightClientOptimisticUpdate:
     return LightClientOptimisticUpdate(
         attested_header=upgrade_lc_header_to_deneb(pre.attested_header),
         sync_aggregate=pre.sync_aggregate,
