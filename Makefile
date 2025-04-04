@@ -58,8 +58,8 @@ VENV = venv
 PYTHON_VENV = $(VENV)/bin/python3
 PIP_VENV = $(VENV)/bin/pip3
 CODESPELL_VENV = $(VENV)/bin/codespell
-BLACKEN_DOCS_VENV = $(VENV)/bin/blacken-docs
 MDFORMAT_VENV = $(VENV)/bin/mdformat
+MDFORMAT_BLACK_VENV = $(VENV)/bin/mdformat_black
 
 # Make a virtual environment.
 $(VENV):
@@ -189,7 +189,7 @@ lint: pyspec
 	@$(MDFORMAT_VENV) --number $(MARKDOWN_FILES)
 	@$(CODESPELL_VENV) . --skip "./.git,$(VENV),$(PYSPEC_DIR)/.mypy_cache" -I .codespell-whitelist
 	@for file in $(MARKDOWN_FILES); do \
-		$(BLACKEN_DOCS_VENV) $$file; \
+		$(MDFORMAT_BLACK_VENV) $$file; \
 	done
 	@$(PYTHON_VENV) -m black $(PYSPEC_DIR)/eth2spec
 	@$(PYTHON_VENV) -m black $(TEST_GENERATORS_DIR)
