@@ -3,6 +3,12 @@ from eth2spec.test.context import (
     spec_test,
     with_fulu_and_later,
 )
+from eth2spec.test.helpers.constants import (
+    MAINNET,
+    MINIMAL,
+)
+from eth2spec.test.context import with_presets
+from eth2spec.test.context import spec_state_test, with_phases, FULU
 
 
 @with_fulu_and_later
@@ -32,3 +38,11 @@ def test_polynomial_commitments_sampling(spec):
 @single_phase
 def test_networking(spec):
     assert spec.config.MAX_BLOBS_PER_BLOCK_FULU <= spec.MAX_BLOB_COMMITMENTS_PER_BLOCK
+
+
+@with_fulu_and_later
+@spec_state_test
+@with_presets([MINIMAL])
+def test_custom(spec, state):
+    print(spec.CUSTOM_EPOCH)
+    assert 1 == 0

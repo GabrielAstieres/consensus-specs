@@ -8,6 +8,7 @@
   - [Misc](#misc)
 - [Custom types](#custom-types)
 - [Configuration](#configuration)
+  - [BPO blobs schedule](#bpo-blobs-schedule)
   - [Data size](#data-size)
   - [Custody setting](#custody-setting)
   - [Containers](#containers)
@@ -52,6 +53,15 @@ The following values are (non-configurable) constants used throughout the specif
 | `CustodyIndex` | `uint64`       | Custody group identifier in the set of custody groups |
 
 ## Configuration
+
+### BPO blobs schedule
+
+| Name    | Value    | Description |
+| ------- | -------- | ----------- |
+| `EPOCH` | `348618` | First epoch |
+| `MAX`   | `48`     | First epoch |
+| `EPOCH` | `355368` | First epoch |
+| `MAX`   | `56`     | First epoch |
 
 ### Data size
 

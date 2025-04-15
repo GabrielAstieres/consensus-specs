@@ -302,6 +302,10 @@ def get_spec(file_name: Path, preset: Dict[str, str], config: Dict[str, str], pr
                     if name in preset:
                         preset_vars[name] = VariableDefinition(value_def.type_name, preset[name], value_def.comment, None)
                     elif name in config:
+
+                        if name == 'CUSTOM_EPOCH':
+                            raise Exception(f'======= {name}, {value_def.type_name}, {preset[name]}, {value_def.comment } =======')
+                        
                         config_vars[name] = VariableDefinition(value_def.type_name, config[name], value_def.comment, None)
                     else:
                         if name in ('ENDIANNESS', 'KZG_ENDIANNESS'):
