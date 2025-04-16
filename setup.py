@@ -209,7 +209,7 @@ def get_spec(file_name: Path, preset: Dict[str, str], config: Dict[str, str], pr
     ssz_objects: Dict[str, str] = {}
     dataclasses: Dict[str, str] = {}
     all_custom_types: Dict[str, str] = {}
-
+    names = []
     with open(file_name) as source_file:
         document = parse_markdown(source_file.read())
 
@@ -224,6 +224,17 @@ def get_spec(file_name: Path, preset: Dict[str, str], config: Dict[str, str], pr
         if isinstance(child, Heading):
             current_name = _get_name_from_heading(child)
         elif isinstance(child, FencedCode):
+            if child.lang == "blob-schedule":
+                blob_schedule = {}
+                raw = child.children[0].children
+                lines = raw.strip().splitlines()[2:]
+                for line in lines:
+                    cells = [col.strip().strip("`") for col in line.strip("| \n").split("|")]
+                    epoch_str, max_str = cells
+                    names.append(epoch_str)
+                    names.append(max_str)
+
+                raise Exception(names)
             if child.lang != "python":
                 continue
             source = _get_source_from_code_block(child)
@@ -302,10 +313,6 @@ def get_spec(file_name: Path, preset: Dict[str, str], config: Dict[str, str], pr
                     if name in preset:
                         preset_vars[name] = VariableDefinition(value_def.type_name, preset[name], value_def.comment, None)
                     elif name in config:
-
-                        if name == 'CUSTOM_EPOCH':
-                            raise Exception(f'======= {name}, {value_def.type_name}, {preset[name]}, {value_def.comment } =======')
-                        
                         config_vars[name] = VariableDefinition(value_def.type_name, config[name], value_def.comment, None)
                     else:
                         if name in ('ENDIANNESS', 'KZG_ENDIANNESS'):
@@ -319,6 +326,7 @@ def get_spec(file_name: Path, preset: Dict[str, str], config: Dict[str, str], pr
         elif isinstance(child, HTMLBlock):
             if child.body.strip() == "<!-- eth2spec: skip -->":
                 should_skip = True
+    # raise Exception(names)
 
     # Load KZG trusted setup from files
     if any('KZG_SETUP' in name for name in constant_vars):

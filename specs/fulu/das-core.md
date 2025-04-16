@@ -54,14 +54,14 @@ The following values are (non-configurable) constants used throughout the specif
 
 ## Configuration
 
-### BPO blobs schedule
+### Max blob schedule
 
-| Name    | Value    | Description |
-| ------- | -------- | ----------- |
-| `EPOCH` | `348618` | First epoch |
-| `MAX`   | `48`     | First epoch |
-| `EPOCH` | `355368` | First epoch |
-| `MAX`   | `56`     | First epoch |
+```blob-schedule
+| Epoch           | Max Blobs Per Block |
+| --------------- | ------------------- |
+| `Epoch(348618)` | `uint64(48)`        |
+| `Epoch(355368)` | `uint64(56)`        |
+```
 
 ### Data size
 
