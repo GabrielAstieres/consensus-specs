@@ -8,6 +8,7 @@
   - [Misc](#misc)
 - [Custom types](#custom-types)
 - [Configuration](#configuration)
+  - [BPO blobs schedule](#bpo-blobs-schedule)
   - [Data size](#data-size)
   - [Custody setting](#custody-setting)
   - [Containers](#containers)
@@ -52,6 +53,13 @@ The following values are (non-configurable) constants used throughout the specif
 | `CustodyIndex` | `uint64`       | Custody group identifier in the set of custody groups |
 
 ## Configuration
+
+### BPO blobs schedule
+
+| Epoch           | Max Blobs Per Block | Description                               |
+| --------------- | ------------------- | ----------------------------------------- |
+| `Epoch(348618)` | `uint64(48)`        | <!-- blob-schedule --> 48 max blobs per block starting epoch 348618 |
+| `Epoch(355368)` | `uint64(56)`        | <!-- blob-schedule --> 56 max blobs per block starting epoch 355368 |
 
 ### Data size
 

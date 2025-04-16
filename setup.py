@@ -215,6 +215,7 @@ def get_spec(file_name: Path, preset: Dict[str, str], config: Dict[str, str], pr
 
     current_name = None
     should_skip = False
+    blob_schedule = {}
     for child in document.children:
         if isinstance(child, BlankLine):
             continue
@@ -281,6 +282,11 @@ def get_spec(file_name: Path, preset: Dict[str, str], config: Dict[str, str], pr
                         # marko parses `**X**` as a list containing a X
                         value = value[0].children
 
+                    # Special parsing to create BPO's dict
+                    if description is not None and description.startswith("<!-- blob-schedule -->"):
+                        blob_schedule[name] = {"max_blobs_per_block": value}
+                        config_vars['blob_schedule'] = blob_schedule
+
                     # Skip types that have been defined elsewhere
                     if description is not None and description.startswith("<!-- predefined-type -->"):
                         continue
@@ -315,6 +321,9 @@ def get_spec(file_name: Path, preset: Dict[str, str], config: Dict[str, str], pr
         elif isinstance(child, HTMLBlock):
             if child.body.strip() == "<!-- eth2spec: skip -->":
                 should_skip = True
+    # v =  config_vars.get('blob_schedule', None) 
+    # if v is not None:
+    #     raise Exception(v)
 
     # Load KZG trusted setup from files
     if any('KZG_SETUP' in name for name in constant_vars):
