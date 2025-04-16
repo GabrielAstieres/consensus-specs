@@ -233,8 +233,9 @@ def get_spec(file_name: Path, preset: Dict[str, str], config: Dict[str, str], pr
                     epoch_str, max_str = cells
                     names.append(epoch_str)
                     names.append(max_str)
-
-                raise Exception(names)
+                    # blob_schedule[VariableDefinition('Epoch', epoch_str, None, None)] = {"max_blobs_per_block":VariableDefinition('uint', max_str, None, None)}
+                    blob_schedule[epoch_str] = {"max_blobs_per_block": max_str}
+                    config_vars['blob_schedule'] = blob_schedule
             if child.lang != "python":
                 continue
             source = _get_source_from_code_block(child)
@@ -326,7 +327,6 @@ def get_spec(file_name: Path, preset: Dict[str, str], config: Dict[str, str], pr
         elif isinstance(child, HTMLBlock):
             if child.body.strip() == "<!-- eth2spec: skip -->":
                 should_skip = True
-    # raise Exception(names)
 
     # Load KZG trusted setup from files
     if any('KZG_SETUP' in name for name in constant_vars):

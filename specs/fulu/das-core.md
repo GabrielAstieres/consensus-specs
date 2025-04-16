@@ -8,7 +8,7 @@
   - [Misc](#misc)
 - [Custom types](#custom-types)
 - [Configuration](#configuration)
-  - [BPO blobs schedule](#bpo-blobs-schedule)
+  - [Max blob schedule](#max-blob-schedule)
   - [Data size](#data-size)
   - [Custody setting](#custody-setting)
   - [Containers](#containers)
