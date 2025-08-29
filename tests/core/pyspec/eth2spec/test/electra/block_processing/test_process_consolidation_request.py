@@ -1138,6 +1138,41 @@ def test_incorrect_source_has_pending_withdrawal(spec, state):
 )
 @spec_test
 @single_phase
+def test_incorrect_source_is_target(spec, state):
+    # move state forward SHARD_COMMITTEE_PERIOD epochs to allow for consolidation
+    state.slot += spec.config.SHARD_COMMITTEE_PERIOD * spec.SLOTS_PER_EPOCH
+
+    # Set up a consolidation with target == source
+    current_epoch = spec.get_current_epoch(state)
+    target_index = source_index = spec.get_active_validator_indices(state, current_epoch)[0]
+    source_address = b"\x22" * 20
+    excess_balance = spec.EFFECTIVE_BALANCE_INCREMENT // 4
+    set_eth1_withdrawal_credential_with_balance(
+        spec,
+        state,
+        source_index,
+        address=source_address,
+        effective_balance=spec.MIN_ACTIVATION_BALANCE,
+        balance=spec.MIN_ACTIVATION_BALANCE + excess_balance,
+    )
+    consolidation = spec.ConsolidationRequest(
+        source_address=source_address,
+        source_pubkey=state.validators[source_index].pubkey,
+        target_pubkey=state.validators[target_index].pubkey,
+    )
+    set_compounding_withdrawal_credential_with_balance(spec, state, target_index)
+
+    yield from run_consolidation_processing(spec, state, consolidation, success=False)
+
+
+@with_electra_and_later
+@with_presets([MINIMAL], "need sufficient consolidation churn limit")
+@with_custom_state(
+    balances_fn=scaled_churn_balances_exceed_activation_exit_churn_limit,
+    threshold_fn=default_activation_threshold,
+)
+@spec_test
+@single_phase
 def test_incorrect_source_not_active_long_enough(spec, state):
     # Set up an otherwise correct consolidation
     current_epoch = spec.get_current_epoch(state)
